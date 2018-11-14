@@ -1,0 +1,48 @@
+*.class
+*.log
+
+# various kinds of temporary files
+\#*
+\.\#*
+\.history
+*\.swp
+\.tif
+
+# sbt specific
+\.build\.sbt\.swp
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+\.scala_dependencies
+
+\.idea
+\.name
+\.history
+
+# eclipse specific
+\.classpath
+\.cache*
+\.settings/
+\.settings*
+\.project*
+\.cache-main*
+
+# R specific
+\.R*
+
+# emacs backup and temp files
+*~
+
+# binary files (objects, shared objects)
+*.o
+*.so
+a.out
+
+#python build/distro specific
+*.egg-info/
+dist/

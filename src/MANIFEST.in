@@ -1,0 +1,5 @@
+include setup.py
+include pykafarr.pyx
+include pykafarr.pxd
+include pykafarr.cpp
+include cpp/*.?pp
