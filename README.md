@@ -18,7 +18,7 @@ p = pykafarr.listener('kafka_server:9092',
 
 while -2 < -1:
     frame = p.poll(num_messages = 1000, max_time = 30000)
-    # frame is a pandas data frame with columns containing the fields from the 
+    # frame is a pandas data frame with columns containing fields as defined in the Avro schema for the message
     print(frame)
 ```
 
