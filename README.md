@@ -2,6 +2,8 @@
 
 Messages are read using rdkafka client and transformed into an arrow record batch. This is then wrapped as a pandas data frame an returned to the python client.
 
+The pandas data frame has the colums as defined in the Avro schema for the message. There is a meta-data column for the message offset. One row per message. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. 
+
 It should be useful for reading time series data off a Kafka topic into a Pandas frame from python. It is very performant - should read and parse 100 000 small messages in under 250ms.
 
 The c++ codebase is independent of python and can be used directly from c++ (see example in the cpp directory). In that case you are working with Apache::Arrow structures to interface with Kafka. (the Makefile in src/cpp shows how to build).
@@ -18,7 +20,7 @@ p = pykafarr.listener('kafka_server:9092',
 
 while -2 < -1:
     frame = p.poll(num_messages = 1000, max_time = 30000)
-    # frame is a pandas data frame with columns containing fields as defined in the Avro schema for the message
+    # pandas data frame, one row per mesage, columns as defined in the message Avro schema
     print(frame)
 ```
 
