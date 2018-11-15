@@ -7,7 +7,7 @@ The data frame contains a column for each field of the message as defined in its
 The c++ part of codebase is fully independent of Python and can be used directly from c++. In that case you are working with Apache::Arrow structures to interface with Kafka.
 
 #### Performance:
-It should be useful for reading time series data off a Kafka topic into a Pandas frame from python. While no time has been spent on optimisations it is already reasonably performant. Pykafarr can read and parse 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests. Reading from a remote kafka topic would change the numbers depending on your network latency and network stack config.
+While no time has been spent on optimisations it is already reasonably performant. Pykafarr can read and parse 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests. Reading from a remote kafka topic would change the numbers depending on your network latency.
 
 #### Example:
 
