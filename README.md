@@ -85,4 +85,6 @@ Those will be added some time in the near future, the first priority has been to
        
 ```
 - More testing needs to be done around messages with mixed schemas.
+- More testing needs to be done around reading from multiple topics.
+- Come up with a configurable model of hos much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
 - OS. This has only been tested on Ubuntu 18.xx. There is no reason any other Linux versions and MacOS should be an issue. Windows howver might be a different story.
