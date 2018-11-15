@@ -1,12 +1,12 @@
-### Pykafarr is a library for efficientlly reading typed kafka messages in python.
+### Pykafarr is a library for efficientlly streaming typed Kafka messages in Python.
 
-Messages are read using rdkafka client and transformed into an arrow record batch. This is then wrapped as a pandas data frame an returned to the python client.
+Messages are read on the rdkafka client and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame an returned to the Python client.
 
-The pandas data frame has the colums as defined in the Avro schema for the message. There is a meta-data column for the message offset. One row per message. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. Eg: if messages A,A,A,A,A,B,B,B,B,B arrive the _poll_ will return early with 5 rows of A and 5 rows of B upon the subsequent all. Clearly, this behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as A,B,A,B,A,B....
+The data frame contains a columns for each field of the message as defined in the Avro schema for the message. There is an additional meta-data column for message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. Eg: if messages A,A,A,A,A,B,B,B,B,B arrive the _poll(MaxInt, MaxInt)_ will return early with 5 rows of A and 5 rows of B upon the subsequent invocation. Clearly, this behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as A,B,A,B,A,B....
 
 It should be useful for reading time series data off a Kafka topic into a Pandas frame from python. It is very performant - should read and parse 100 000 small messages in under 250ms.
 
-The c++ codebase is independent of python and can be used directly from c++ (see example in the cpp directory). In that case you are working with Apache::Arrow structures to interface with Kafka. (the Makefile in src/cpp shows how to build).
+The c++ part of codebase is fully independent of python and can be used directly from c++ (see example in the cpp directory). In that case you are working with Apache::Arrow structures to interface with Kafka. (the Makefile in src/cpp shows how to build).
 
 #### Example:
 
@@ -57,8 +57,8 @@ Two docker containers are provied. The development and the runtime. To build the
 ##### Development image
 Provides a complete development environment with all dependencies built and installed in order to build and run *pykafarr*. It is fairly minimal but takes some time to build (~10mins) due to building all the dependencies.
 
-##### Development image
-Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers would simply use the pykafarr as an example ut 
+##### Runtime image
+Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers containing apps could simply use the pykafarr image as the base.
 
 #### To Use
 Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
@@ -66,9 +66,11 @@ Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
 #### Not [yet] supported
 - Message sending
 - Keyed messages
-- Untyped (Schema-less) messages
+- All Avro primitive types. Only bool, int, long, float, double and string currentlly supported.
+- Complex schemas. Schemas where children are not primitive types.
+- Untyped (schema-less) messages
 
-Those will be added some time in the near future. Please register an issue if you have a preference.
+Those will be added some time in the near future, the first priority has been to get something working sensibly released. Please register an issue if you have a preference.
 
 #### Issues/Limitations
 - The polling timeout is currentlly not working correctly. The logic needs to be clearer. The issue is slightly complicated by the fact that there is also the 'client catcup time' which presumably should not be included as polling time or perhaps needs to be mandated separtely (andother parameter?). Suggestions welcome but the next change will be to this:
