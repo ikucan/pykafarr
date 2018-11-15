@@ -2,7 +2,7 @@
 
 Messages are read on the c++ Kafka client and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client.
 
-The data frame contains a columns for each field of the message as defined in the Avro schema for the message. There is an additional meta-data column for message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. Eg: if messages A,A,A,A,A,B,B,B,B,B arrive the _poll(MaxInt, MaxInt)_ will return early with 5 rows of A and 5 rows of B upon the subsequent invocation. Clearly, this behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as A,B,A,B,A,B....
+The data frame contains a column for each field of the message as defined in its Avro schema. There is an additional metadata column for the message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. Eg: if messages A,A,A,A,A,B,B,B,B,B arrive the _poll(MaxInt, MaxInt)_ will return early with 5 rows of A and 5 rows of B upon the subsequent invocation. This behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as A,B,A,B,A,B....
 
 It should be useful for reading time series data off a Kafka topic into a Pandas frame from python. It is very performant - should read and parse 100 000 small messages in under 250ms.
 
