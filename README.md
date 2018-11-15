@@ -2,7 +2,7 @@
 
 Messages are read using rdkafka client and transformed into an arrow record batch. This is then wrapped as a pandas data frame an returned to the python client.
 
-The pandas data frame has the colums as defined in the Avro schema for the message. There is a meta-data column for the message offset. One row per message. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. 
+The pandas data frame has the colums as defined in the Avro schema for the message. There is a meta-data column for the message offset. One row per message. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. Eg: if messages A,A,A,A,A,B,B,B,B,B arrive the _poll_ will return early with 5 rows of A and 5 rows of B upon the subsequent all. Clearly, this behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as A,B,A,B,A,B....
 
 It should be useful for reading time series data off a Kafka topic into a Pandas frame from python. It is very performant - should read and parse 100 000 small messages in under 250ms.
 
