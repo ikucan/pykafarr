@@ -4,9 +4,10 @@ Messages are read on the c++ Kafka client and transformed into an Arrow record b
 
 The data frame contains a column for each field of the message as defined in its Avro schema. There is an additional metadata column for the message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. Eg: if messages A,A,A,A,A,B,B,B,B,B arrive the _poll(MaxInt, MaxInt)_ will return early with 5 rows of A and 5 rows of B upon the subsequent invocation. This behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as A,B,A,B,A,B....
 
-It should be useful for reading time series data off a Kafka topic into a Pandas frame from python. It is very performant - should read and parse 100 000 small messages in under 250ms.
-
 The c++ part of codebase is fully independent of python and can be used directly from c++ (see example in the cpp directory). In that case you are working with Apache::Arrow structures to interface with Kafka. (the Makefile in src/cpp shows how to build).
+
+#### Performance:
+It should be useful for reading time series data off a Kafka topic into a Pandas frame from python. While no time has been spent on optimisations it is already reasonably performant. Pykafarr can read and parse 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests. Reading from a remote kafka topic would change the numbers depending on your network latency and network stack config.
 
 #### Example:
 
