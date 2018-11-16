@@ -92,7 +92,6 @@ RUN      make -j 10
 RUN      make install
 
 # set up python
-RUN      mkdir -p /workstem/
 RUN      mkdir -p /opt/
 
 #
@@ -108,26 +107,23 @@ RUN      conda install -y numpy   -n pykafarr
 RUN      conda install -y pandas  -n pykafarr
 RUN      conda install -y pyarrow -n pykafarr
 RUN      conda install -y cython  -n pykafarr
-RUN      source activate pykafarr
 RUN      python -V
 
 #
 ## set up the ssh client
 #
 RUN      mkdir /root/.ssh
-#COPY     id_rsa /root/.ssh/
-#COPY     id_rsa.pub /root/.ssh/
-#COPY     known_hosts /root/.ssh/
 #COPY     authorized_keys /root/.ssh/
 #RUN      chmod 600 /root/.ssh/*
 
 #
 ## check out the work (the SSH keys should be sufficient for authentication)
 #
-#WORKDIR  /workstem
-#RUN      git clone git@bitbucket.org:kardenalmendoza/pykafarr.git
-#WORKDIR  /workstem/pykafarr/src/cpp
-#RUN      make
+WORKDIR  /workstem
+RUN      git clone https://github.com/ikucan/pykafarr.git
+WORKDIR  /workstem/pykafarr/src/
+#RUN      source activate pykafarr
+#RUN      python setup.py build_ext --inplace
 
 #
 ## all third party sources are built into default prefix, so needs to be in the path

@@ -17,20 +17,20 @@ RUN  apt-get install -yq git
 # --------------------------------------------------------------------------------------------
 RUN     mkdir -p /usr/local/lib
 WORKDIR /usr/local/lib
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/*.a /usr/local/lib/
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/libarrow.so.12.0.0 /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/*.a /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/libarrow.so.12.0.0 /usr/local/lib/
 RUN    ln -s libarrow.so.12.0.0 libarrow.so.12
 RUN    ln -s libarrow.so.12 libarrow.so
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/libavro.so.23.0.0 /usr/local/lib/
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/libavrocpp.so.1.9.0-SNAPSHOT.0 /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/libavro.so.23.0.0 /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/libavrocpp.so.1.9.0-SNAPSHOT.0 /usr/local/lib/
 RUN    ln -s libavro.so.23.0.0 libavro.so 
 RUN    ln -s libavrocpp.so.1.9.0-SNAPSHOT.0 libavrocpp.so
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/librdkafka.so.1 /usr/local/lib/
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/librdkafka++.so.1 /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/librdkafka.so.1 /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/librdkafka++.so.1 /usr/local/lib/
 RUN    ln -s librdkafka.so.1 librdkafka.so
 RUN    ln -s librdkafka++.so.1 librdkafka++.so
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/libserdes.so.1 /usr/local/lib/
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/lib/libserdes++.so.1 /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/libserdes.so.1 /usr/local/lib/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/lib/libserdes++.so.1 /usr/local/lib/
 RUN    ln -s libserdes.so.1 libserdes.so
 RUN    ln -s libserdes++.so.1 libserdes++.so
 
@@ -38,7 +38,7 @@ ENV     LD_LIBRARY_PATH=/usr/local/lib
 
 RUN     mkdir -p /usr/local/include
 WORKDIR /usr/local/include
-COPY   --from=kmendoza/pykafarr_dev:1.0.0 /usr/local/include/ /usr/local/include/
+COPY   --from=ikucan/pykafarr_dev:1.0.0 /usr/local/include/ /usr/local/include/
 
 
 # --------------------------------------------------------------------------------------------
