@@ -49,6 +49,8 @@ pip install -i https://test.pypi.org/simple/ pykafarr
 Navigate to the src/py directory and run:
 
 ```
+git clone https://github.com/ikucan/pykafarr.git
+cd pykafarr/src
 python setup.sh build_ext -inplace
 ```
 

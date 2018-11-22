@@ -1,21 +1,6 @@
 import pykafarr
 import sys
 
-#print('------------------')
-#for i in range(0, 10):
-#    p = pykafarr.pyfoo.mk_dflt()
-
-#print('------------------')
-#for i in range(0, 10):
-#    p = pykafarr.pyfoo(i)
-
-#print('------------------')
-#for i in range(0, 10):
-#    p = pykafarr.pyfoo.mk_funny(-i)
-
-#print('------------------')
-#for i in range(0, 10):
-#    p = pykafarr.pyfoo(str(i).encode('utf-8'))
 
 def cstr(s):
     return s.encode('utf-8')
