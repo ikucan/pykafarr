@@ -37,11 +37,11 @@ namespace kafarr {
     bse() = delete;
     bse(const std::string& reg_url):_srds(kfk_hlpr::mk_srds(reg_url))
     {
-      std::cerr << "bse::bse(..)\n";
+      //std::cerr << "bse::bse(..)\n";
     }
     
     virtual ~bse(){
-      std::cerr << "bse::~bse()\n";
+      //std::cerr << "bse::~bse()\n";
     }
   };
 
@@ -52,6 +52,7 @@ namespace kafarr {
   private :
     const int RD_KFK_POLL_MS = 5;
     const std::unique_ptr<RdKafka::KafkaConsumer> _cnsmr;
+    bool first_call = true;
     
   public:
     lstnr() = delete;
@@ -84,7 +85,7 @@ namespace kafarr {
     }
     
   public:
-    void poll(int n_msgs, std::shared_ptr<arrow::RecordBatch>* out, int max_tme_ms = 1000) {
+    void poll(int n_msgs, std::shared_ptr<arrow::RecordBatch>* out, int max_tme_ms = 1000, int max_catchup_tme = 30000) {
       // no known schema id yet...
       int _val_blck_sch_id = -1;
 
@@ -93,15 +94,19 @@ namespace kafarr {
       std::string err;
       std::unique_ptr<arrow::RecordBatchBuilder> bldr;
             
-      auto [n, go]=std::tuple(0, true);
+      auto [n, go]   = std::tuple(0, true);
       auto [t0, t00] = std::tuple(now_ms(), now_ms());
       
       while(go) {
 	// poll kafka
+	auto foo = now_ms();
 	const std::shared_ptr<RdKafka::Message> msg(_cnsmr->consume(max_tme_ms));
+	//std::cerr << (now_ms() - foo) << "ms" << std::endl;
+	//std::cerr << msg->err() << std::endl;
 	
 	// check if result is an actual messgage
 	if(kfk_hlpr::is_msg(msg)){
+	  first_call = false;
 	  // we have a message
 	  // make sure there is no key, we currentlly don't process keys
 	  if(msg->key()) throw kafarr::err("keyed messages currentlly not handled! ");
@@ -110,14 +115,14 @@ namespace kafarr {
 	  if(msg->payload()){
 	    int msg_val_sch_id = -1;
 	    
-	    if(kfk_hlpr::val_cp1(msg)){
+	    if(kfk_hlpr::val_cp1(msg)) {
 	      // so message value is schema encoded - get schema id
 	      const int msg_val_sch_id = kfk_hlpr::schm_id(msg->payload());
 	      
 	      if(_val_blck_sch_id == -1) {
 		// first message in a block. set schema
-		t00 = now_ms();  //DBG
-		std::cerr << "DEBUG:>> time waiting for the first message: " <<  (t00 - t0) << "ms" <<  std::endl;
+		// t00 = now_ms();  //DBG
+		// std::cerr << "DEBUG:>> time waiting for the first message: " <<  (t00 - t0) << "ms" <<  std::endl;
 		_val_blck_sch_id = msg_val_sch_id;
 
 		if(_srds->deserialize(&schema, &dtm, msg->payload(), msg->len(), err) == -1)
@@ -152,7 +157,7 @@ namespace kafarr {
 		//_cnsmr->offsets_store(prtns);
 		_cnsmr->seek(*prtns[0], 1000);
 		_cnsmr->commitSync(prtns);
-		
+
 		go = false;
 		
 		// TODO:>> remove once the above code is tested
@@ -165,15 +170,34 @@ namespace kafarr {
 	  // if message max or timed out
 	  if (++n >= n_msgs) go = false;
         }
-	if (now_ms() - t0 > max_tme_ms) go = false;
+	else if (first_call && msg->err() == -185){
+	  //std::cerr << " FIRST CALL. WAITING to catch up." << std::endl;
+	  t00 = now_ms();
+	}
+	else {
+	  if(msg->err() == -185){
+	  // end of topic/partition (i.e. all messages read)
+	    //std::cerr << " Not FIRST CALL. No MESSAGES." << std::endl;
+	    go = false;
+	  }
+	  else if(msg->err() == -191){	  
+	    //std::cerr << " No MORE MESSAGES." << std::endl;
+	    // end of topic/partition (i.e. all messages read)
+	    go = false;
+	  }
+	  first_call = false;
+	}
+	
+	if (now_ms() - t00 > max_tme_ms) go = false;
       }
 
       if(schema) delete(schema);
 
       {
-	auto tpop = now_ms() - t00;
-	std::cerr << "DEBUG:>> time popping messages: " <<  (now_ms() - t00) << "ms" <<   std::endl;
+	std::cerr << "DEBUG:>> time waiting to catch up : " <<  (t0 - t00) << "ms" <<   std::endl;
+	std::cerr << "DEBUG:>> time popping messages    : " <<  (now_ms() - t00) << "ms" <<   std::endl;
       }
+      
       _cnsmr->commitSync();
       
       if(n > 0) bldr->Flush(out);

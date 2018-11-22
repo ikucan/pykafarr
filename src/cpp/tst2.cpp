@@ -16,14 +16,16 @@ int main(int argc, char** argv) {
   gethostname(hostname, HOST_NAME_MAX);
   std::string kfk_hst = hostname;
   if(argc == 2) kfk_hst = argv[1];
-
+  
   std::cerr << "kafka host: " << kfk_hst << std::endl;  
 
   try{
-    kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"avro_test2"}, "http://" + kfk_hst + ":8081");
+    //kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"CS.D.GBPUSD.MINI.IP_TOPICX"}, "http://" + kfk_hst + ":8081");
+    kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"test_topic_1"}, "http://" + kfk_hst + ":8081");
 
+    while(true) {
     std::shared_ptr<arrow::RecordBatch> rcrds;
-    l.poll(10, &rcrds, 200000);
+    l.poll(10, &rcrds);
 
     std::cerr << "--------------------------------------------\n";
     std::cerr << "--------------------------------------------\n";
@@ -40,6 +42,7 @@ int main(int argc, char** argv) {
     }
     std::cerr << "--------------------------------------------\n";
     std::cerr << "--------------------------------------------\n";
+    }
   }
   catch (const kafarr::err& ke) {
     std::cerr << "ERROR caught:>> " << ke.msg() << "\n" ;
