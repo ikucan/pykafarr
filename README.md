@@ -77,7 +77,7 @@ Those will be added some time in the near future, the first priority has been to
 
 #### Issues/Limitations
 - ~~The polling timeout is currentlly not working correctly. The logic needs to be clearer. The issue is slightly complicated by the fact that there is also the 'client catcup time' which presumably should not be included as polling time or perhaps needs to be mandated separtely (andother parameter?). Suggestions welcome but the next change will be to this:~~
-  This has been fixed. Still testing but almost ready to be checked in.
+  This has been fixed. Still testing but almost ready to be checked in. The algorithm is as was suggested initially.
 
 ```
   poll(n_msgs, timeout):
