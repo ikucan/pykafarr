@@ -76,7 +76,8 @@ Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
 Those will be added some time in the near future, the first priority has been to get something working sensibly released. Please register an issue if you have a preference.
 
 #### Issues/Limitations
-- The polling timeout is currentlly not working correctly. The logic needs to be clearer. The issue is slightly complicated by the fact that there is also the 'client catcup time' which presumably should not be included as polling time or perhaps needs to be mandated separtely (andother parameter?). Suggestions welcome but the next change will be to this:
+- ~~The polling timeout is currentlly not working correctly. The logic needs to be clearer. The issue is slightly complicated by the fact that there is also the 'client catcup time' which presumably should not be included as polling time or perhaps needs to be mandated separtely (andother parameter?). Suggestions welcome but the next change will be to this:~~
+  This has been fixed. Still testing but almost ready to be checked in.
 
 ```
   poll(n_msgs, timeout):
