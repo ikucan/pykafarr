@@ -24,24 +24,27 @@ int main(int argc, char** argv) {
     kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"test_topic_1"}, "http://" + kfk_hst + ":8081");
 
     while(true) {
-    std::shared_ptr<arrow::RecordBatch> rcrds;
-    l.poll(10, &rcrds);
-
-    std::cerr << "--------------------------------------------\n";
-    std::cerr << "--------------------------------------------\n";
-    if(rcrds){
-      std::cerr << "#cols: " << rcrds->num_columns() << std::endl;
-      std::cerr << "#rows: " << rcrds->num_rows() << std::endl;
+      std::shared_ptr<arrow::RecordBatch> rcrds;
+      l.poll(200, &rcrds, 5000);
       
-      for(int i = 10000000; i < rcrds->num_columns(); ++i) {
-	auto col =  rcrds->column(i);
-	std::cerr << rcrds->column_name(i) << "[" << col->type()->ToString() << "] : ";
-	std::cerr << col->ToString();
-	std::cerr << std::endl;
+      if(rcrds){
+	std::cerr << "--------------------------------------------\n";
+	std::cerr << "--------------------------------------------\n";
+	std::cerr << "#cols: " << rcrds->num_columns() << std::endl;
+	std::cerr << "#rows: " << rcrds->num_rows() << std::endl;
+	
+	for(int i = 0; i < rcrds->num_columns(); ++i) {
+	  auto col =  rcrds->column(i);
+	  //std::cerr << rcrds->column_name(i) << "[" << col->type()->ToString() << "] : ";
+	  if(rcrds->column_name(i) == "offst" ){
+	    std::cerr << rcrds->column_name(i) << "[" << col->type()->ToString() << "] : ";
+	    std::cerr << col->ToString();
+	    std::cerr << std::endl;
+	  }
+	}
+	std::cerr << "--------------------------------------------\n";
+	std::cerr << "--------------------------------------------\n";
       }
-    }
-    std::cerr << "--------------------------------------------\n";
-    std::cerr << "--------------------------------------------\n";
     }
   }
   catch (const kafarr::err& ke) {

@@ -142,16 +142,16 @@ namespace kafarr {
 	      }
 	      else {
 		// TODO:>> this case needs testing
-		//std::cerr<< "BREAK in schema. Previous was " << _val_blck_sch_id << ", current is : " << msg_val_sch_id << std::endl;		
-		std::cerr << "rejecting message @ offset " << msg->offset() << " on topic::" << msg->topic_name() << " [" << msg->partition() << "]" << std::endl;	
+		//std::cerr<< "BREAK in schema. Previous was " << _val_blck_sch_id << ", current is : " << msg_val_sch_id << std::endl;	   
+		//std::cerr << "rejecting message @ offset " << msg->offset() << " on topic::" << msg->topic_name() << " [" << msg->partition() << "]" << std::endl;	
 		//read the state of client on partition message arrived on
 		std::vector<RdKafka::TopicPartition*> prtns{RdKafka::TopicPartition::create(msg->topic_name(), msg->partition())};
 		_cnsmr->position(prtns);
-		std::cerr << "rejecting message @ offset " << prtns[0]->offset() << " on topic::" << prtns[0]->topic() << " [" << prtns[0]->partition() << "]" << std::endl;
+		//std::cerr << "rejecting message @ offset " << prtns[0]->offset() << " on topic::" << prtns[0]->topic() << " [" << prtns[0]->partition() << "]" << std::endl;
 		
 		//set a modified offset
 		prtns[0]->set_offset(msg->offset());
-		std::cerr << "Resseting offset to:: [" << prtns[0]->offset() <<  "]@" << prtns[0]->partition() << std::endl;
+		//std::cerr << "Resseting offset to:: [" << prtns[0]->offset() <<  "]@" << prtns[0]->partition() << std::endl;
 		//
 		
 		//_cnsmr->offsets_store(prtns);
@@ -161,7 +161,7 @@ namespace kafarr {
 		go = false;
 		
 		// TODO:>> remove once the above code is tested
-		throw kafarr::err("BUG. Break in schema is not handled.");
+		//throw kafarr::err("BUG. Break in schema is not handled.");
 	      }
 	    }
 	    else
@@ -193,10 +193,8 @@ namespace kafarr {
 
       if(schema) delete(schema);
 
-      {
-	std::cerr << "DEBUG:>> time waiting to catch up : " <<  (t0 - t00) << "ms" <<   std::endl;
-	std::cerr << "DEBUG:>> time popping messages    : " <<  (now_ms() - t00) << "ms" <<   std::endl;
-      }
+      //std::cerr << "DEBUG:>> time waiting to catch up : " <<  (t0 - t00) << "ms" <<   std::endl;
+      //std::cerr << "DEBUG:>> time popping messages    : " <<  (now_ms() - t00) << "ms" <<   std::endl;
       
       _cnsmr->commitSync();
       
