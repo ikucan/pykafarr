@@ -29,7 +29,7 @@ module = Extension(
 
 setup(
     name             = 'pykafarr', 
-    version          = '0.0.5.6',
+    version          = '0.0.5.7',
     author           = 'iztok kucan',
     author_email     = 'iztok.kucan@gmail.com',
     url              = 'https://github.com/ikucan/pykafarr',
