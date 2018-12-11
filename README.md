@@ -21,8 +21,8 @@ p = pykafarr.listener('kafka_server:9092',
 
 while -2 < -1:
     message_type, frame = p.poll(num_messages = 1000, max_time = 30000)
-    # 1. name of the [fully-qualified avro] message schema
-    # 2. pandas data frame, one row per mesage, columns as defined in the message Avro schema
+    # 1. message_type: name of the [fully-qualified avro] message schema
+    # 2. frama: pandas data frame, one row per mesage, columns as defined in the message Avro schema
     print(message_type)
     print(frame)
 ```
