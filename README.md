@@ -31,6 +31,7 @@ while -2 < -1:
 ```
 
 #### Dependencies:
+There are a few:
 - apache rdkafka (c & c++)
 - apache avro (c & c++)
 - apache serdes (c & c++)
@@ -39,7 +40,7 @@ while -2 < -1:
 
 Other things you will need: g++, boost, jansson (JSON parser), snappy and curl dev libs.
 
-A farily isolated developmnet environment is described in the _dev_env_ docker container.
+A farily isolated developmnet environment is described in the _dev_env_ docker container. If you have any issues installing dependencies I would recommend the Dockerfile as a guide on how to get it built and installed.
 
 The only way this was tested is by building the above rather than installing distros' official versions. While the latter should be ok there are more variables in play.
 
