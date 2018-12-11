@@ -11,6 +11,7 @@ While no time has been spent on optimisations it is already reasonably performan
 
 #### Status:
 Functionality is still underdeveloped, however what is there is thought to work without known issues. Please add to the issue register or raise a pull request if you have anything specific in mind.
+Valgrind reports no memory leaks!
 
 #### Example:
 
