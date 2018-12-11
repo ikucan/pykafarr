@@ -2440,6 +2440,38 @@ static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
     PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
     const char* function_name);
 
+/* IncludeCppStringH.proto */
+#include <string>
+
+/* decode_c_string_utf16.proto */
+static CYTHON_INLINE PyObject *__Pyx_PyUnicode_DecodeUTF16(const char *s, Py_ssize_t size, const char *errors) {
+    int byteorder = 0;
+    return PyUnicode_DecodeUTF16(s, size, errors, &byteorder);
+}
+static CYTHON_INLINE PyObject *__Pyx_PyUnicode_DecodeUTF16LE(const char *s, Py_ssize_t size, const char *errors) {
+    int byteorder = -1;
+    return PyUnicode_DecodeUTF16(s, size, errors, &byteorder);
+}
+static CYTHON_INLINE PyObject *__Pyx_PyUnicode_DecodeUTF16BE(const char *s, Py_ssize_t size, const char *errors) {
+    int byteorder = 1;
+    return PyUnicode_DecodeUTF16(s, size, errors, &byteorder);
+}
+
+/* decode_c_bytes.proto */
+static CYTHON_INLINE PyObject* __Pyx_decode_c_bytes(
+         const char* cstring, Py_ssize_t length, Py_ssize_t start, Py_ssize_t stop,
+         const char* encoding, const char* errors,
+         PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors));
+
+/* decode_cpp_string.proto */
+static CYTHON_INLINE PyObject* __Pyx_decode_cpp_string(
+         std::string cppstring, Py_ssize_t start, Py_ssize_t stop,
+         const char* encoding, const char* errors,
+         PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors)) {
+    return __Pyx_decode_c_bytes(
+        cppstring.data(), cppstring.size(), start, stop, encoding, errors, decode_func);
+}
+
 /* PyCFunctionFastCall.proto */
 #if CYTHON_FAST_PYCCALL
 static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
@@ -2846,6 +2878,11 @@ static std::shared_ptr< arrow::Tensor>  (*__pyx_f_7pyarrow_3lib_pyarrow_unwrap_t
 static PyTypeObject *__pyx_ptype_8pykafarr_listener = 0;
 static std::string __pyx_convert_string_from_py_std__in_string(PyObject *); /*proto*/
 static std::vector<std::string>  __pyx_convert_vector_from_py_std_3a__3a_string(PyObject *); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyStr_string_to_py_std__in_string(std::string const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyBytes_string_to_py_std__in_string(std::string const &); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_std__in_string(std::string const &); /*proto*/
 #define __Pyx_MODULE_NAME "pykafarr"
 extern int __pyx_module_is_main_pykafarr;
 int __pyx_module_is_main_pykafarr = 0;
@@ -3089,7 +3126,7 @@ static void __pyx_pf_8pykafarr_8listener_2__dealloc__(struct __pyx_obj_8pykafarr
  * 
  *   def poll(self, int num_messages, int max_time):             # <<<<<<<<<<<<<<
  *       cdef shared_ptr[CRecordBatch] ptr;
- *       self.c_obj.poll(num_messages, &ptr, max_time)
+ *       msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
  */
 
 /* Python wrapper */
@@ -3155,68 +3192,82 @@ static PyObject *__pyx_pw_8pykafarr_8listener_5poll(PyObject *__pyx_v_self, PyOb
 
 static PyObject *__pyx_pf_8pykafarr_8listener_4poll(struct __pyx_obj_8pykafarr_listener *__pyx_v_self, int __pyx_v_num_messages, int __pyx_v_max_time) {
   std::shared_ptr< arrow::RecordBatch>  __pyx_v_ptr;
+  std::string __pyx_v_msg_name;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
+  std::string __pyx_t_1;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("poll", 0);
 
   /* "pykafarr.pyx":23
  *   def poll(self, int num_messages, int max_time):
  *       cdef shared_ptr[CRecordBatch] ptr;
- *       self.c_obj.poll(num_messages, &ptr, max_time)             # <<<<<<<<<<<<<<
- *       return pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+ *       msg_name = self.c_obj.poll(num_messages, &ptr, max_time)             # <<<<<<<<<<<<<<
+ *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
  * 
  */
   try {
-    __pyx_v_self->c_obj->poll(__pyx_v_num_messages, (&__pyx_v_ptr), __pyx_v_max_time);
+    __pyx_t_1 = __pyx_v_self->c_obj->poll(__pyx_v_num_messages, (&__pyx_v_ptr), __pyx_v_max_time);
   } catch(...) {
     __Pyx_CppExn2PyErr();
     __PYX_ERR(1, 23, __pyx_L1_error)
   }
+  __pyx_v_msg_name = __pyx_t_1;
 
   /* "pykafarr.pyx":24
  *       cdef shared_ptr[CRecordBatch] ptr;
- *       self.c_obj.poll(num_messages, &ptr, max_time)
- *       return pyarrow_wrap_batch(ptr).to_pandas() if ptr else None             # <<<<<<<<<<<<<<
+ *       msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
+ *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None             # <<<<<<<<<<<<<<
  * 
  *   def ex_tst(self, string msg):
  */
   __Pyx_XDECREF(__pyx_r);
+  __pyx_t_2 = __Pyx_decode_cpp_string(__pyx_v_msg_name, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 24, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
   if (__pyx_v_ptr.operator bool()) {
-    __pyx_t_3 = __pyx_f_7pyarrow_3lib_pyarrow_wrap_batch(__pyx_v_ptr); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 24, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_to_pandas); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 24, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = NULL;
-    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
-      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_4);
-      if (likely(__pyx_t_3)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
-        __Pyx_INCREF(__pyx_t_3);
+    __pyx_t_5 = __pyx_f_7pyarrow_3lib_pyarrow_wrap_batch(__pyx_v_ptr); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 24, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_to_pandas); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 24, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_5 = NULL;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_6);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+        __Pyx_INCREF(__pyx_t_5);
         __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_4, function);
+        __Pyx_DECREF_SET(__pyx_t_6, function);
       }
     }
-    if (__pyx_t_3) {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 24, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (__pyx_t_5) {
+      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 24, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     } else {
-      __pyx_t_2 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 24, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyObject_CallNoArg(__pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 24, __pyx_L1_error)
     }
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_1 = __pyx_t_2;
-    __pyx_t_2 = 0;
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_3 = __pyx_t_4;
+    __pyx_t_4 = 0;
   } else {
     __Pyx_INCREF(Py_None);
-    __pyx_t_1 = Py_None;
+    __pyx_t_3 = Py_None;
   }
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 24, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
+  __Pyx_GIVEREF(__pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
+  __pyx_t_2 = 0;
+  __pyx_t_3 = 0;
+  __pyx_r = __pyx_t_4;
+  __pyx_t_4 = 0;
   goto __pyx_L0;
 
   /* "pykafarr.pyx":21
@@ -3224,15 +3275,16 @@ static PyObject *__pyx_pf_8pykafarr_8listener_4poll(struct __pyx_obj_8pykafarr_l
  * 
  *   def poll(self, int num_messages, int max_time):             # <<<<<<<<<<<<<<
  *       cdef shared_ptr[CRecordBatch] ptr;
- *       self.c_obj.poll(num_messages, &ptr, max_time)
+ *       msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("pykafarr.listener.poll", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -3242,7 +3294,7 @@ static PyObject *__pyx_pf_8pykafarr_8listener_4poll(struct __pyx_obj_8pykafarr_l
 }
 
 /* "pykafarr.pyx":26
- *       return pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+ *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
  * 
  *   def ex_tst(self, string msg):             # <<<<<<<<<<<<<<
  *       self.c_obj.ex_tst(msg)
@@ -3289,7 +3341,7 @@ static PyObject *__pyx_pf_8pykafarr_8listener_6ex_tst(struct __pyx_obj_8pykafarr
   }
 
   /* "pykafarr.pyx":26
- *       return pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+ *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
  * 
  *   def ex_tst(self, string msg):             # <<<<<<<<<<<<<<
  *       self.c_obj.ex_tst(msg)
@@ -3643,6 +3695,240 @@ static std::vector<std::string>  __pyx_convert_vector_from_py_std_3a__3a_string(
   __Pyx_pretend_to_initialize(&__pyx_r);
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_item);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":31
+ * 
+ * @cname("__pyx_convert_PyObject_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyObject_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyObject_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyObject_string_to_py_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyObject_string_to_py_std__in_string", 0);
+
+  /* "string.to_py":32
+ * @cname("__pyx_convert_PyObject_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyObject_string_to_py_std__in_string(const string& s):
+ *     return __Pyx_PyObject_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * cdef extern from *:
+ *     cdef object __Pyx_PyUnicode_FromStringAndSize(const char*, size_t)
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyObject_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":31
+ * 
+ * @cname("__pyx_convert_PyObject_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyObject_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyObject_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyObject_string_to_py_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":37
+ * 
+ * @cname("__pyx_convert_PyUnicode_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyUnicode_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyUnicode_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyUnicode_string_to_py_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyUnicode_string_to_py_std__in_string", 0);
+
+  /* "string.to_py":38
+ * @cname("__pyx_convert_PyUnicode_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyUnicode_string_to_py_std__in_string(const string& s):
+ *     return __Pyx_PyUnicode_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * cdef extern from *:
+ *     cdef object __Pyx_PyStr_FromStringAndSize(const char*, size_t)
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyUnicode_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 38, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":37
+ * 
+ * @cname("__pyx_convert_PyUnicode_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyUnicode_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyUnicode_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyUnicode_string_to_py_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":43
+ * 
+ * @cname("__pyx_convert_PyStr_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyStr_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyStr_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyStr_string_to_py_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyStr_string_to_py_std__in_string", 0);
+
+  /* "string.to_py":44
+ * @cname("__pyx_convert_PyStr_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyStr_string_to_py_std__in_string(const string& s):
+ *     return __Pyx_PyStr_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * cdef extern from *:
+ *     cdef object __Pyx_PyBytes_FromStringAndSize(const char*, size_t)
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyStr_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":43
+ * 
+ * @cname("__pyx_convert_PyStr_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyStr_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyStr_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyStr_string_to_py_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":49
+ * 
+ * @cname("__pyx_convert_PyBytes_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyBytes_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyBytes_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyBytes_string_to_py_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyBytes_string_to_py_std__in_string", 0);
+
+  /* "string.to_py":50
+ * @cname("__pyx_convert_PyBytes_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyBytes_string_to_py_std__in_string(const string& s):
+ *     return __Pyx_PyBytes_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * cdef extern from *:
+ *     cdef object __Pyx_PyByteArray_FromStringAndSize(const char*, size_t)
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBytes_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":49
+ * 
+ * @cname("__pyx_convert_PyBytes_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyBytes_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyBytes_FromStringAndSize(s.data(), s.size())
+ * cdef extern from *:
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyBytes_string_to_py_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "string.to_py":55
+ * 
+ * @cname("__pyx_convert_PyByteArray_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())
+ * 
+ */
+
+static CYTHON_INLINE PyObject *__pyx_convert_PyByteArray_string_to_py_std__in_string(std::string const &__pyx_v_s) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("__pyx_convert_PyByteArray_string_to_py_std__in_string", 0);
+
+  /* "string.to_py":56
+ * @cname("__pyx_convert_PyByteArray_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_std__in_string(const string& s):
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())             # <<<<<<<<<<<<<<
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyByteArray_FromStringAndSize(__pyx_v_s.data(), __pyx_v_s.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "string.to_py":55
+ * 
+ * @cname("__pyx_convert_PyByteArray_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("string.to_py.__pyx_convert_PyByteArray_string_to_py_std__in_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -4247,12 +4533,12 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_1) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "vector.from_py":45
+  /* "string.to_py":55
  * 
- * @cname("__pyx_convert_vector_from_py_std_3a__3a_string")
- * cdef vector[X] __pyx_convert_vector_from_py_std_3a__3a_string(object o) except *:             # <<<<<<<<<<<<<<
- *     cdef vector[X] v
- *     for item in o:
+ * @cname("__pyx_convert_PyByteArray_string_to_py_std__in_string")
+ * cdef inline object __pyx_convert_PyByteArray_string_to_py_std__in_string(const string& s):             # <<<<<<<<<<<<<<
+ *     return __Pyx_PyByteArray_FromStringAndSize(s.data(), s.size())
+ * 
  */
 
   /*--- Wrapped vars code ---*/
@@ -4465,6 +4751,33 @@ invalid_keyword:
     #endif
 bad:
     return -1;
+}
+
+/* decode_c_bytes */
+static CYTHON_INLINE PyObject* __Pyx_decode_c_bytes(
+         const char* cstring, Py_ssize_t length, Py_ssize_t start, Py_ssize_t stop,
+         const char* encoding, const char* errors,
+         PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors)) {
+    if (unlikely((start < 0) | (stop < 0))) {
+        if (start < 0) {
+            start += length;
+            if (start < 0)
+                start = 0;
+        }
+        if (stop < 0)
+            stop += length;
+    }
+    if (stop > length)
+        stop = length;
+    length = stop - start;
+    if (unlikely(length <= 0))
+        return PyUnicode_FromUnicode(NULL, 0);
+    cstring += start;
+    if (decode_func) {
+        return decode_func(cstring, length, errors);
+    } else {
+        return PyUnicode_Decode(cstring, length, encoding, errors);
+    }
 }
 
 /* PyCFunctionFastCall */

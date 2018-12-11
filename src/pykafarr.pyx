@@ -20,8 +20,8 @@ cdef class listener:
 
   def poll(self, int num_messages, int max_time):
       cdef shared_ptr[CRecordBatch] ptr;
-      self.c_obj.poll(num_messages, &ptr, max_time)
-      return pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+      msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
+      return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
 
   def ex_tst(self, string msg):
       self.c_obj.ex_tst(msg)

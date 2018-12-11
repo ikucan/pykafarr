@@ -41,21 +41,28 @@ namespace kafarr {
     /**
      * make an arrow schema from an avro schema
      */
-    static std::shared_ptr<arrow::Schema> mk_arrw_schm(std::shared_ptr<Serdes::Schema>& schm) {      
-      const avro::ValidSchema* avr_schm = schm->object();
-      return avr2arr(avr_schm->root());      
-    }
-    static std::shared_ptr<arrow::Schema> mk_arrw_schm(Serdes::Schema* schm) {      
+    //static std::shared_ptr<arrow::Schema> mk_arrw_schm(std::shared_ptr<Serdes::Schema>& schm) {      
+    //  const avro::ValidSchema* avr_schm = schm->object();
+    //  return avr2arr(avr_schm->root());      
+    // }
+    static std::tuple<std::string, std::shared_ptr<arrow::Schema>> mk_arrw_schm(Serdes::Schema* schm) {
+      //static std::shared_ptr<arrow::Schema> mk_arrw_schm(Serdes::Schema* schm) {      
       const avro::ValidSchema* avr_schm = schm->object();
       return avr2arr(avr_schm->root());      
     }
 
   private:
-    static std::shared_ptr<arrow::Schema> avr2arr(const avro::NodePtr& root){
+    //static std::shared_ptr<arrow::Schema> avr2arr(const avro::NodePtr& root){
+    static std::tuple<std::string, std::shared_ptr<arrow::Schema>> avr2arr(const avro::NodePtr& root){
       //static void record2arrow(const avro::NodePtr& root){
       if(root->type() != avro::AVRO_RECORD)
-	throw kafarr::err("root node is is not a record type but", toString(root->type()));
+	throw kafarr::err("ERROR. Expecting root node to be record type but is ", toString(root->type()));
 
+      //std::cerr << " full name: " << root->name().fullname() << std::endl;
+      if (root->name().fullname().length() < 1)
+	throw kafarr::err("ERROR. Expecting root node to have a non-empty name.");
+      
+      
       auto arrw_flds = std::vector<std::shared_ptr<arrow::Field>>();
 
       // insert a message offset field
@@ -68,7 +75,7 @@ namespace kafarr {
 	arrw_flds.push_back(arrow::field(root->nameAt(i), arrw_typ(lf)));
       }
       arrw_flds.push_back(arrow::field("offst", arrow::int64()));
-      return std::make_shared<arrow::Schema>(arrw_flds, nullptr);
+      return {root->name().fullname(), std::make_shared<arrow::Schema>(arrw_flds, nullptr)};
     }
 
     /**

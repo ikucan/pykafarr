@@ -10,5 +10,5 @@ from pyarrow.includes.libarrow cimport CRecordBatch
 cdef extern from "kafarr.hpp" namespace "kafarr":
     cdef cppclass lstnr:
         lstnr(string&, string&, vector[string]&, string&) except +
-        void poll(int, shared_ptr[CRecordBatch]*, int) except +
+        string poll(int, shared_ptr[CRecordBatch]*, int) except +
         void ex_tst(string&) except +

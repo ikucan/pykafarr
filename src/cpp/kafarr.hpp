@@ -85,13 +85,14 @@ namespace kafarr {
     }
     
   public:
-    void poll(int n_msgs, std::shared_ptr<arrow::RecordBatch>* out, int max_tme_ms = 1000, int max_catchup_tme = 30000) {
+    std::string poll(int n_msgs, std::shared_ptr<arrow::RecordBatch>* out, int max_tme_ms = 1000, int max_catchup_tme = 30000) {
       // no known schema id yet...
       int _val_blck_sch_id = -1;
 
       Serdes::Schema* schema = NULL;
       avro::GenericDatum *dtm = NULL;
       std::string err;
+      std::string schema_name;
       std::unique_ptr<arrow::RecordBatchBuilder> bldr;
             
       auto [n, go]   = std::tuple(0, true);
@@ -118,7 +119,8 @@ namespace kafarr {
 	    if(kfk_hlpr::val_cp1(msg)) {
 	      // so message value is schema encoded - get schema id
 	      const int msg_val_sch_id = kfk_hlpr::schm_id(msg->payload());
-	      
+
+	      // first message processed by this poll
 	      if(_val_blck_sch_id == -1) {
 		// first message in a block. set schema
 		// t00 = now_ms();  //DBG
@@ -128,9 +130,17 @@ namespace kafarr {
 		if(_srds->deserialize(&schema, &dtm, msg->payload(), msg->len(), err) == -1)
 		  throw kafarr::err(" failed to deserialise messge: ", err);
 
-		auto arr_schm = avr_hlpr::mk_arrw_schm(schema);
+		//auto arr_schm = avr_hlpr::mk_arrw_schm(schema);
+		std::tuple<std::string, std::shared_ptr<arrow::Schema>> res = avr_hlpr::mk_arrw_schm(schema);
+		std::cerr << "------------------------------------------------------\n";
+		std::cerr << "SCHEMA NAME : " << schema->object()->root()->name() << std::endl;
+		std::cerr << ".. returned : " << std::get<0>(res) << std::endl;
+		schema_name = std::get<0>(res);
+		std::cerr << "------------------------------------------------------\n";
+		
 		auto pool = arrow::default_memory_pool();
-		arrow::RecordBatchBuilder::Make(arr_schm, pool, &bldr);
+		//arrow::RecordBatchBuilder::Make(arr_schm, pool, &bldr);
+		arrow::RecordBatchBuilder::Make(std::get<1>(res), pool, &bldr);
 		avr_hlpr::rd_dta(msg->offset(), dtm, bldr);
 		delete dtm;
 	      }
@@ -199,6 +209,8 @@ namespace kafarr {
       _cnsmr->commitSync();
       
       if(n > 0) bldr->Flush(out);
+
+      return schema_name;
     }
 
     // TODO:>>  

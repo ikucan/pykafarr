@@ -25,11 +25,12 @@ int main(int argc, char** argv) {
 
     while(true) {
       std::shared_ptr<arrow::RecordBatch> rcrds;
-      l.poll(200, &rcrds, 5000);
+      auto name = l.poll(200, &rcrds, 5000);
       
       if(rcrds){
 	std::cerr << "--------------------------------------------\n";
 	std::cerr << "--------------------------------------------\n";
+	std::cerr << "message name: " << name << std::endl;
 	std::cerr << "#cols: " << rcrds->num_columns() << std::endl;
 	std::cerr << "#rows: " << rcrds->num_rows() << std::endl;
 	
