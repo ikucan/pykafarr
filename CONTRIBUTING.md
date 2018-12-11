@@ -1,1 +1,1 @@
-Either raise and issue or fork it and submit a merge request.
+Either raise and issue or fork it and submit a pull request.
