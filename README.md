@@ -7,7 +7,10 @@ The data frame contains a column for each field of the message as defined in its
 The c++ part of codebase is fully independent of Python and can be used directly from c++. In that case you are working with Apache::Arrow structures to interface with Kafka.
 
 #### Performance:
-While no time has been spent on optimisations it is already reasonably performant. Pykafarr can read and parse 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests. Reading from a remote kafka topic would change the numbers depending on your network latency.
+While no time has been spent on optimisations it is already reasonably performant. Pykafarr can read, parse and package into Pandas 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests on an underwhelming old laptop in a single-host setup. Reading from a remote kafka topic would change the numbers depending on your network latency.
+
+#### Status:
+Functionality is still underdeveloped, however what is there is thought to work without known issues. Please add to the issue register or raise a pull request if you have anything specific in mind.
 
 #### Example:
 
@@ -22,7 +25,7 @@ p = pykafarr.listener('kafka_server:9092',
 while -2 < -1:
     message_type, frame = p.poll(num_messages = 1000, max_time = 30000)
     # 1. message_type: name of the [fully-qualified avro] message schema
-    # 2. frama: pandas data frame, one row per mesage, columns as defined in the message Avro schema
+    # 2. frame: pandas data frame, one row per mesage, columns as defined in the message Avro schema
     print(message_type)
     print(frame)
 ```
