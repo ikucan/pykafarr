@@ -106,4 +106,4 @@ Those will be added some time in the near future, the first priority has been to
 - [Apache Arrow C++](https://arrow.apache.org/docs/cpp/index.html "C++ API docs")
 - [Cython & Apache Arrow](https://arrow.apache.org/docs/python/extending.html "Apache Arrow API for usage with Cython")
 - [Serdes](https://github.com/confluentinc/libserdes/blob/master/src-cpp/Serdes.cpp "[De]Serialisation API for Kafka")
-- [Apache Avro](https://avro.apache.org/docs/1.6.1/api/cpp/html/index.html, "C++ API docs")
+- [Apache Avro](https://avro.apache.org/docs/1.6.1/api/cpp/html/index.html "C++ API docs")
