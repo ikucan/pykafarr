@@ -130,16 +130,9 @@ namespace kafarr {
 		if(_srds->deserialize(&schema, &dtm, msg->payload(), msg->len(), err) == -1)
 		  throw kafarr::err(" failed to deserialise messge: ", err);
 
-		//auto arr_schm = avr_hlpr::mk_arrw_schm(schema);
 		std::tuple<std::string, std::shared_ptr<arrow::Schema>> res = avr_hlpr::mk_arrw_schm(schema);
-		std::cerr << "------------------------------------------------------\n";
-		std::cerr << "SCHEMA NAME : " << schema->object()->root()->name() << std::endl;
-		std::cerr << ".. returned : " << std::get<0>(res) << std::endl;
 		schema_name = std::get<0>(res);
-		std::cerr << "------------------------------------------------------\n";
-		
 		auto pool = arrow::default_memory_pool();
-		//arrow::RecordBatchBuilder::Make(arr_schm, pool, &bldr);
 		arrow::RecordBatchBuilder::Make(std::get<1>(res), pool, &bldr);
 		avr_hlpr::rd_dta(msg->offset(), dtm, bldr);
 		delete dtm;
@@ -151,7 +144,6 @@ namespace kafarr {
 		delete dtm;
 	      }
 	      else {
-		// TODO:>> this case needs testing
 		//std::cerr<< "BREAK in schema. Previous was " << _val_blck_sch_id << ", current is : " << msg_val_sch_id << std::endl;	   
 		//std::cerr << "rejecting message @ offset " << msg->offset() << " on topic::" << msg->topic_name() << " [" << msg->partition() << "]" << std::endl;	
 		//read the state of client on partition message arrived on
@@ -186,7 +178,7 @@ namespace kafarr {
 	}
 	else {
 	  if(msg->err() == -185){
-	  // end of topic/partition (i.e. all messages read)
+	    // end of topic/partition (i.e. all messages read)
 	    //std::cerr << " Not FIRST CALL. No MESSAGES." << std::endl;
 	    go = false;
 	  }

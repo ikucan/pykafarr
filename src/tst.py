@@ -24,7 +24,7 @@ p = pykafarr.listener(srvrs, grp_id, tpcs, reg_url)
 for i in range(0, 1000):
     print ('------------------------------')
     print ('run number:>> ', i)
-    nme, frm = p.poll(10, 5000)
+    nme, frm = p.poll(50, 5000)
     if frm is not None:
         print(nme)
         print(frm.shape)

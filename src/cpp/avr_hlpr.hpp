@@ -41,40 +41,31 @@ namespace kafarr {
     /**
      * make an arrow schema from an avro schema
      */
-    //static std::shared_ptr<arrow::Schema> mk_arrw_schm(std::shared_ptr<Serdes::Schema>& schm) {      
-    //  const avro::ValidSchema* avr_schm = schm->object();
-    //  return avr2arr(avr_schm->root());      
-    // }
     static std::tuple<std::string, std::shared_ptr<arrow::Schema>> mk_arrw_schm(Serdes::Schema* schm) {
-      //static std::shared_ptr<arrow::Schema> mk_arrw_schm(Serdes::Schema* schm) {      
       const avro::ValidSchema* avr_schm = schm->object();
       return avr2arr(avr_schm->root());      
     }
 
   private:
-    //static std::shared_ptr<arrow::Schema> avr2arr(const avro::NodePtr& root){
     static std::tuple<std::string, std::shared_ptr<arrow::Schema>> avr2arr(const avro::NodePtr& root){
-      //static void record2arrow(const avro::NodePtr& root){
+
       if(root->type() != avro::AVRO_RECORD)
 	throw kafarr::err("ERROR. Expecting root node to be record type but is ", toString(root->type()));
 
-      //std::cerr << " full name: " << root->name().fullname() << std::endl;
       if (root->name().fullname().length() < 1)
-	throw kafarr::err("ERROR. Expecting root node to have a non-empty name.");
-      
+	throw kafarr::err("ERROR. Expecting root node to have a non-empty name.");      
       
       auto arrw_flds = std::vector<std::shared_ptr<arrow::Field>>();
 
-      // insert a message offset field
-      // TODO:>>this is someahat hard-coded
-      
       for(int i = 0; i < root->leaves(); ++i){
 	auto lf = root->leafAt(i);
 	if (!lf) throw kafarr::err("leaf node is null", root->nameAt(i));
 	//std::cerr << "  field @" << i << " :: " << root->nameAt(i) << " : " << lf->type() << std::endl;
 	arrw_flds.push_back(arrow::field(root->nameAt(i), arrw_typ(lf)));
       }
-      arrw_flds.push_back(arrow::field("offst", arrow::int64()));
+      // insert a message offset field
+      // TODO:>>this is someahat hard-coded
+            arrw_flds.push_back(arrow::field("offst", arrow::int64()));
       return {root->name().fullname(), std::make_shared<arrow::Schema>(arrw_flds, nullptr)};
     }
 
@@ -187,7 +178,6 @@ namespace kafarr {
     /**
      * forward to the right decoder for given type
      */
-    //static void rd_fld(const avro::GenericDatum& dtm, std::unique_ptr<arrow::RecordBatchBuilder>& bldr) {
     static void rd_fld(const avro::GenericDatum& dtm, arrow::ArrayBuilder* bldr) {
       switch (dtm.type()) {
       case avro::Type::AVRO_STRING:

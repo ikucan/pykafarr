@@ -23,12 +23,15 @@ int main(int argc, char** argv) {
     //kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"CS.D.GBPUSD.MINI.IP_TOPICX"}, "http://" + kfk_hst + ":8081");
     kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"test_topic_1"}, "http://" + kfk_hst + ":8081");
 
-    while(true) {
+    auto go = true;
+    auto n = 0;
+    while(go) {
       std::shared_ptr<arrow::RecordBatch> rcrds;
       auto name = l.poll(200, &rcrds, 5000);
       
       if(rcrds){
 	std::cerr << "--------------------------------------------\n";
+	std::cerr << "Batch #: " << n << "\n";
 	std::cerr << "--------------------------------------------\n";
 	std::cerr << "message name: " << name << std::endl;
 	std::cerr << "#cols: " << rcrds->num_columns() << std::endl;
@@ -45,6 +48,8 @@ int main(int argc, char** argv) {
 	}
 	std::cerr << "--------------------------------------------\n";
 	std::cerr << "--------------------------------------------\n";
+	n += 1;
+	if (n > 10) go = false;
       }
     }
   }
