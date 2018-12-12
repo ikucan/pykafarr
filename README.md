@@ -100,3 +100,7 @@ Those will be added some time in the near future, the first priority has been to
        
 ```
 - ~~More testing needs to be done around messages with mixed schemas.~~ This has been done. Works as expected. No messages are lost upon schema change (a poped message with a new schema is pushed back and succesfully popped on next _poll_).
+
+
+#### References
+1. [Cython & Apache Arrow](https://arrow.apache.org/docs/python/extending.html "Apache Arrow API for usage with Cython")
