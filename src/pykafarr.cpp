@@ -2889,6 +2889,7 @@ int __pyx_module_is_main_pykafarr = 0;
 
 /* Implementation of 'pykafarr' */
 static PyObject *__pyx_builtin_TypeError;
+static const char __pyx_k_frm[] = "frm";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
 static const char __pyx_k_test[] = "__test__";
@@ -2896,6 +2897,7 @@ static const char __pyx_k_ctypes[] = "ctypes";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_topics[] = "topics";
+static const char __pyx_k_msg_typ[] = "msg_typ";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_group_id[] = "group_id";
 static const char __pyx_k_max_time[] = "max_time";
@@ -2914,11 +2916,13 @@ static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __red
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_ctypes;
+static PyObject *__pyx_n_s_frm;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_n_s_group_id;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_max_time;
+static PyObject *__pyx_n_s_msg_typ;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_kp_s_no_default___reduce___due_to_non;
 static PyObject *__pyx_n_s_num_messages;
@@ -2936,10 +2940,12 @@ static PyObject *__pyx_n_s_topics;
 static int __pyx_pf_8pykafarr_8listener___cinit__(struct __pyx_obj_8pykafarr_listener *__pyx_v_self, std::string __pyx_v_server_list, std::string __pyx_v_group_id, std::vector<std::string>  __pyx_v_topics, PyObject *__pyx_v_schema_registry_url); /* proto */
 static void __pyx_pf_8pykafarr_8listener_2__dealloc__(struct __pyx_obj_8pykafarr_listener *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8pykafarr_8listener_4poll(struct __pyx_obj_8pykafarr_listener *__pyx_v_self, int __pyx_v_num_messages, int __pyx_v_max_time); /* proto */
-static PyObject *__pyx_pf_8pykafarr_8listener_6ex_tst(struct __pyx_obj_8pykafarr_listener *__pyx_v_self, std::string __pyx_v_msg); /* proto */
-static PyObject *__pyx_pf_8pykafarr_8listener_8__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_8pykafarr_8listener_10__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_8pykafarr_8listener_6send(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self, CYTHON_UNUSED std::string __pyx_v_msg_typ, CYTHON_UNUSED PyObject *__pyx_v_frm); /* proto */
+static PyObject *__pyx_pf_8pykafarr_8listener_8ex_tst(struct __pyx_obj_8pykafarr_listener *__pyx_v_self, std::string __pyx_v_msg); /* proto */
+static PyObject *__pyx_pf_8pykafarr_8listener_10__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8pykafarr_8listener_12__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_8pykafarr_listener(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_int_neg_1;
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_tuple__2;
 /* Late includes */
@@ -3223,7 +3229,7 @@ static PyObject *__pyx_pf_8pykafarr_8listener_4poll(struct __pyx_obj_8pykafarr_l
  *       msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
  *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None             # <<<<<<<<<<<<<<
  * 
- *   def ex_tst(self, string msg):
+ *   def send(self, string& msg_typ, frm):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2 = __Pyx_decode_cpp_string(__pyx_v_msg_name, 0, PY_SSIZE_T_MAX, NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 24, __pyx_L1_error)
@@ -3296,19 +3302,120 @@ static PyObject *__pyx_pf_8pykafarr_8listener_4poll(struct __pyx_obj_8pykafarr_l
 /* "pykafarr.pyx":26
  *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
  * 
+ *   def send(self, string& msg_typ, frm):             # <<<<<<<<<<<<<<
+ *       cdef shared_ptr[CRecordBatch] ptr;
+ *       #msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_8pykafarr_8listener_7send(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_8pykafarr_8listener_7send(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  CYTHON_UNUSED std::string __pyx_v_msg_typ;
+  CYTHON_UNUSED PyObject *__pyx_v_frm = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("send (wrapper)", 0);
+  {
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_msg_typ,&__pyx_n_s_frm,0};
+    PyObject* values[2] = {0,0};
+    if (unlikely(__pyx_kwds)) {
+      Py_ssize_t kw_args;
+      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+      switch (pos_args) {
+        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+        CYTHON_FALLTHROUGH;
+        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      kw_args = PyDict_Size(__pyx_kwds);
+      switch (pos_args) {
+        case  0:
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_msg_typ)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
+        CYTHON_FALLTHROUGH;
+        case  1:
+        if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_frm)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("send", 1, 2, 2, 1); __PYX_ERR(1, 26, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "send") < 0)) __PYX_ERR(1, 26, __pyx_L3_error)
+      }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+    }
+    __pyx_v_msg_typ = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 26, __pyx_L3_error)
+    __pyx_v_frm = values[1];
+  }
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("send", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 26, __pyx_L3_error)
+  __pyx_L3_error:;
+  __Pyx_AddTraceback("pykafarr.listener.send", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_8pykafarr_8listener_6send(((struct __pyx_obj_8pykafarr_listener *)__pyx_v_self), __pyx_v_msg_typ, __pyx_v_frm);
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_8pykafarr_8listener_6send(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self, CYTHON_UNUSED std::string __pyx_v_msg_typ, CYTHON_UNUSED PyObject *__pyx_v_frm) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("send", 0);
+
+  /* "pykafarr.pyx":30
+ *       #msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
+ *       #return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+ *       return -1             # <<<<<<<<<<<<<<
+ * 
+ *   def ex_tst(self, string msg):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_int_neg_1);
+  __pyx_r = __pyx_int_neg_1;
+  goto __pyx_L0;
+
+  /* "pykafarr.pyx":26
+ *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+ * 
+ *   def send(self, string& msg_typ, frm):             # <<<<<<<<<<<<<<
+ *       cdef shared_ptr[CRecordBatch] ptr;
+ *       #msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
+ */
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pykafarr.pyx":32
+ *       return -1
+ * 
  *   def ex_tst(self, string msg):             # <<<<<<<<<<<<<<
  *       self.c_obj.ex_tst(msg)
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8pykafarr_8listener_7ex_tst(PyObject *__pyx_v_self, PyObject *__pyx_arg_msg); /*proto*/
-static PyObject *__pyx_pw_8pykafarr_8listener_7ex_tst(PyObject *__pyx_v_self, PyObject *__pyx_arg_msg) {
+static PyObject *__pyx_pw_8pykafarr_8listener_9ex_tst(PyObject *__pyx_v_self, PyObject *__pyx_arg_msg); /*proto*/
+static PyObject *__pyx_pw_8pykafarr_8listener_9ex_tst(PyObject *__pyx_v_self, PyObject *__pyx_arg_msg) {
   std::string __pyx_v_msg;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("ex_tst (wrapper)", 0);
   assert(__pyx_arg_msg); {
-    __pyx_v_msg = __pyx_convert_string_from_py_std__in_string(__pyx_arg_msg); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 26, __pyx_L3_error)
+    __pyx_v_msg = __pyx_convert_string_from_py_std__in_string(__pyx_arg_msg); if (unlikely(PyErr_Occurred())) __PYX_ERR(1, 32, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -3316,19 +3423,19 @@ static PyObject *__pyx_pw_8pykafarr_8listener_7ex_tst(PyObject *__pyx_v_self, Py
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_8pykafarr_8listener_6ex_tst(((struct __pyx_obj_8pykafarr_listener *)__pyx_v_self), ((std::string)__pyx_v_msg));
+  __pyx_r = __pyx_pf_8pykafarr_8listener_8ex_tst(((struct __pyx_obj_8pykafarr_listener *)__pyx_v_self), ((std::string)__pyx_v_msg));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8pykafarr_8listener_6ex_tst(struct __pyx_obj_8pykafarr_listener *__pyx_v_self, std::string __pyx_v_msg) {
+static PyObject *__pyx_pf_8pykafarr_8listener_8ex_tst(struct __pyx_obj_8pykafarr_listener *__pyx_v_self, std::string __pyx_v_msg) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("ex_tst", 0);
 
-  /* "pykafarr.pyx":27
+  /* "pykafarr.pyx":33
  * 
  *   def ex_tst(self, string msg):
  *       self.c_obj.ex_tst(msg)             # <<<<<<<<<<<<<<
@@ -3337,11 +3444,11 @@ static PyObject *__pyx_pf_8pykafarr_8listener_6ex_tst(struct __pyx_obj_8pykafarr
     __pyx_v_self->c_obj->ex_tst(__pyx_v_msg);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(1, 27, __pyx_L1_error)
+    __PYX_ERR(1, 33, __pyx_L1_error)
   }
 
-  /* "pykafarr.pyx":26
- *       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+  /* "pykafarr.pyx":32
+ *       return -1
  * 
  *   def ex_tst(self, string msg):             # <<<<<<<<<<<<<<
  *       self.c_obj.ex_tst(msg)
@@ -3366,19 +3473,19 @@ static PyObject *__pyx_pf_8pykafarr_8listener_6ex_tst(struct __pyx_obj_8pykafarr
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8pykafarr_8listener_9__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyObject *__pyx_pw_8pykafarr_8listener_9__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8pykafarr_8listener_11__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_8pykafarr_8listener_11__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_8pykafarr_8listener_8__reduce_cython__(((struct __pyx_obj_8pykafarr_listener *)__pyx_v_self));
+  __pyx_r = __pyx_pf_8pykafarr_8listener_10__reduce_cython__(((struct __pyx_obj_8pykafarr_listener *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8pykafarr_8listener_8__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self) {
+static PyObject *__pyx_pf_8pykafarr_8listener_10__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3420,19 +3527,19 @@ static PyObject *__pyx_pf_8pykafarr_8listener_8__reduce_cython__(CYTHON_UNUSED s
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8pykafarr_8listener_11__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static PyObject *__pyx_pw_8pykafarr_8listener_11__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_8pykafarr_8listener_13__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static PyObject *__pyx_pw_8pykafarr_8listener_13__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_8pykafarr_8listener_10__setstate_cython__(((struct __pyx_obj_8pykafarr_listener *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_8pykafarr_8listener_12__setstate_cython__(((struct __pyx_obj_8pykafarr_listener *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8pykafarr_8listener_10__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_8pykafarr_8listener_12__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_8pykafarr_listener *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3967,9 +4074,10 @@ static void __pyx_tp_dealloc_8pykafarr_listener(PyObject *o) {
 
 static PyMethodDef __pyx_methods_8pykafarr_listener[] = {
   {"poll", (PyCFunction)__pyx_pw_8pykafarr_8listener_5poll, METH_VARARGS|METH_KEYWORDS, 0},
-  {"ex_tst", (PyCFunction)__pyx_pw_8pykafarr_8listener_7ex_tst, METH_O, 0},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_8pykafarr_8listener_9__reduce_cython__, METH_NOARGS, 0},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_8pykafarr_8listener_11__setstate_cython__, METH_O, 0},
+  {"send", (PyCFunction)__pyx_pw_8pykafarr_8listener_7send, METH_VARARGS|METH_KEYWORDS, 0},
+  {"ex_tst", (PyCFunction)__pyx_pw_8pykafarr_8listener_9ex_tst, METH_O, 0},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_8pykafarr_8listener_11__reduce_cython__, METH_NOARGS, 0},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_8pykafarr_8listener_13__setstate_cython__, METH_O, 0},
   {0, 0, 0, 0}
 };
 
@@ -4071,11 +4179,13 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_ctypes, __pyx_k_ctypes, sizeof(__pyx_k_ctypes), 0, 0, 1, 1},
+  {&__pyx_n_s_frm, __pyx_k_frm, sizeof(__pyx_k_frm), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_n_s_group_id, __pyx_k_group_id, sizeof(__pyx_k_group_id), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_max_time, __pyx_k_max_time, sizeof(__pyx_k_max_time), 0, 0, 1, 1},
+  {&__pyx_n_s_msg_typ, __pyx_k_msg_typ, sizeof(__pyx_k_msg_typ), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_kp_s_no_default___reduce___due_to_non, __pyx_k_no_default___reduce___due_to_non, sizeof(__pyx_k_no_default___reduce___due_to_non), 0, 0, 1, 0},
   {&__pyx_n_s_num_messages, __pyx_k_num_messages, sizeof(__pyx_k_num_messages), 0, 0, 1, 1},
@@ -4130,6 +4240,7 @@ static int __Pyx_InitCachedConstants(void) {
 
 static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(1, 1, __pyx_L1_error);
+  __pyx_int_neg_1 = PyInt_FromLong(-1); if (unlikely(!__pyx_int_neg_1)) __PYX_ERR(1, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;

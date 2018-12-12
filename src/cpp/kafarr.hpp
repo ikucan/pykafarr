@@ -210,7 +210,13 @@ namespace kafarr {
       std::cerr << "about to throw TEST exception: " << msg << "\n";
       throw kafarr::err("thrown TEST exception. msg: " + msg);
     }
-    
+
+
+  public:
+    void send(const std::string& msg_typ, std::shared_ptr<arrow::RecordBatch> data) {
+      std::cout << "Writing message type : " << msg_typ << std::endl;      
+    }
+
   private:
     /**
      * use serdes to decode the message

@@ -23,5 +23,11 @@ cdef class listener:
       msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
 
+  def send(self, string& msg_typ, frm):
+      cdef shared_ptr[CRecordBatch] ptr;
+      #msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
+      #return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
+      return -1
+
   def ex_tst(self, string msg):
       self.c_obj.ex_tst(msg)
