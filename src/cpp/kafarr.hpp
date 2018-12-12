@@ -4,6 +4,7 @@
 #include <memory>
 #include <algorithm>
 #include <chrono>
+#include <sstream>
 
 #include <librdkafka/rdkafkacpp.h>
 #include <libserdes/serdescpp.h>
@@ -213,8 +214,39 @@ namespace kafarr {
 
 
   public:
-    void send(const std::string& msg_typ, std::shared_ptr<arrow::RecordBatch> data) {
-      std::cout << "Writing message type : " << msg_typ << std::endl;      
+    void send(const std::string& msg_typ, std::shared_ptr<arrow::Table> tbl) {
+      std::cerr << "Writing message type : " << msg_typ << std::endl;
+
+      std::cerr << "data table # columns : " << tbl->num_columns() << std::endl;
+
+      for (auto i = 0; i < tbl->num_columns(); ++i) {
+	auto col = tbl->column(i);
+	std::cerr << "col #" << i << " :: name: " << col->name() << " :: length: " << col->length() << std::endl;	
+      }
+      
+      // get the serdes schema for the message type
+      {
+	std::string err;
+
+	const std::unique_ptr <Serdes::Conf> sconf(Serdes::Conf::create());
+	if (sconf->set("schema.registry.url", "http://kfk:8081", err)) throw kafarr::err("failed to set schema url. ", err);
+	if (sconf->set("deserializer.framing", "cp1", err)) throw kafarr::err("faled to set framing. ", err);
+
+	//auto hndl = Serdes::Handle::create(NULL, _err);
+	Serdes::Handle* hndl = Serdes::Handle::create(sconf.get(), err);
+	if (!hndl) std::cerr << "ERROR retrieving the handle:>> " << err << std::endl;
+
+	///auto schm = Serdes::Schema::get(hndl, msg_typ, err);
+	Serdes::Schema* schm = Serdes::Schema::get(hndl, msg_typ, err);
+	if (!schm) std::cerr << "ERROR retrieving the schema for message type: " << msg_typ << ". error: " << err << std::endl;
+
+	{
+	  std::stringstream ss;
+	  avro::ValidSchema* avro_schm = schm->object();
+	  avro_schm->toJson(ss);
+	  std::cerr << "SCHEMA IS: " << ss.str() << std::endl;
+	}	
+      }
     }
 
   private:
@@ -223,7 +255,7 @@ namespace kafarr {
      std::tuple<std::shared_ptr<Serdes::Schema>, std::shared_ptr<avro::GenericDatum> > get_msg_schma(const void *buff, size_t len) {
      avro::GenericDatum *d = NULL;
      Serdes::Schema* schema = NULL;
-     std::string _err;
+     std::string _err;`
      if(_srds->deserialize(&schema, &d, buff, len, _err) == -1)
      throw kafarr::err(" failed to deserialise messge: ", _err);
      return {std::unique_ptr<Serdes::Schema>(schema), std::shared_ptr<avro::GenericDatum>(d)};

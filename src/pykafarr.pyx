@@ -6,8 +6,9 @@ from pykafarr cimport lstnr
 from libcpp.memory cimport shared_ptr
 
 import ctypes
-from pyarrow.includes.libarrow cimport CRecordBatch
-from pyarrow.lib cimport RecordBatch, pyarrow_wrap_batch, check_status
+import pyarrow as pa
+from pyarrow.includes.libarrow cimport CRecordBatch, CTable
+from pyarrow.lib cimport RecordBatch, pyarrow_wrap_batch, pyarrow_unwrap_table, check_status
 
 cdef class listener:
   cdef lstnr* c_obj
@@ -24,7 +25,15 @@ cdef class listener:
       return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
 
   def send(self, string& msg_typ, frm):
-      cdef shared_ptr[CRecordBatch] ptr;
+      print(frm)
+      pa_tbl = pa.Table.from_pandas(frm)
+      print(pa_tbl)
+      cdef shared_ptr[CTable] ptr = pyarrow_unwrap_table(pa_tbl)
+      if ptr:
+        print("Pointer tests ok")
+        self.c_obj.send(msg_typ, ptr);
+        
+
       #msg_name = self.c_obj.poll(num_messages, &ptr, max_time)
       #return msg_name.decode('utf-8'), pyarrow_wrap_batch(ptr).to_pandas() if ptr else None
       return -1
