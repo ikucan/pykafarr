@@ -11,6 +11,7 @@ While no time has been spent on optimisations it is already reasonably performan
 
 #### Status:
 Functionality is still underdeveloped, however what is there is thought to work without known issues. Please add to the issue register or raise a pull request if you have anything specific in mind.
+<br/><br/>So far only tested with Python3 on Ubuntu but no known reason not to try other platforms.
 <br/><br/>_Valgrind_ reports no memory leaks.
 
 #### Example:
@@ -83,7 +84,7 @@ Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
 Those will be added some time in the near future, the first priority has been to get something working sensibly released. Please register an issue if you have a preference.
 
 #### Issues/Limitations
-- More testing needs to be done around reading from multiple topics.
+- More testing needs to be done around reading from multiple topics and multiple partitions.
 - Come up with a configurable model of hos much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
 - OS. This has only been tested on Ubuntu 18.xx. There is no reason any other Linux versions and MacOS should be an issue. Windows howver might be a different story.
 - ~~The polling timeout is currentlly not working correctly. The logic needs to be clearer. The issue is slightly complicated by the fact that there is also the 'client catcup time' which presumably should not be included as polling time or perhaps needs to be mandated separtely (andother parameter?). Suggestions welcome but the next change will be to this:~~
