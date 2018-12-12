@@ -103,5 +103,5 @@ Those will be added some time in the near future, the first priority has been to
 
 
 #### References
-- [Apache Arrow C++] (https://arrow.apache.org/docs/cpp/index.html "C++ API docs"
+- [Apache Arrow C++] (https://arrow.apache.org/docs/cpp/index.html "C++ API docs")
 - [Cython & Apache Arrow](https://arrow.apache.org/docs/python/extending.html "Apache Arrow API for usage with Cython")
