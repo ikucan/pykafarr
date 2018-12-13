@@ -44,20 +44,34 @@ namespace kafarr {
       return cnsmr;
     }
 
+    /**
+     * create a serdes config 
+     */
+    static std::shared_ptr<Serdes::Conf> mk_srds_conf(const std::string& reg_url) {
+      std::string err;
+      const std::shared_ptr <Serdes::Conf> sconf(Serdes::Conf::create());      
+      if (sconf->set("schema.registry.url", reg_url, err)) throw kafarr::err("failed to set schema url. ", err);
+      if (sconf->set("deserializer.framing", "cp1", err)) throw kafarr::err("faled to set framing. ", err);
+      return sconf;
+    }
+
+    /**
+     * make a serdes handle from config
+     */
+    static std::shared_ptr<Serdes::Handle> mk_srds_hndl(const std::shared_ptr<Serdes::Conf> conf) {
+      std::string err;
+      Serdes::Handle* hndl = Serdes::Handle::create(conf.get(), err);
+      if (!hndl) throw kafarr::err("Error creating a Serdes Handle: " + err);      
+      return std::shared_ptr<Serdes::Handle>(hndl);
+    }
 
     /**
      * create a serdes handle
-     * TODO::> combine errors with exceptions
      */
-    static std::unique_ptr<Serdes::Avro> mk_srds(const std::string& reg_url) {
-      std::string _err;
-      const std::unique_ptr <Serdes::Conf> sconf(Serdes::Conf::create());
-      
-      if (sconf->set("schema.registry.url", reg_url, _err)) throw kafarr::err("failed to set schema url. ", _err);
-      if (sconf->set("deserializer.framing", "cp1", _err)) throw kafarr::err("faled to set framing. ", _err);
-      
-      std::unique_ptr<Serdes::Avro> srds(Serdes::Avro::create(sconf.get(), _err));      
-      if (!srds) throw kafarr::err("failed to create serdes. ", _err);
+    static std::unique_ptr<Serdes::Avro> mk_avro(const std::shared_ptr<Serdes::Conf> conf) {
+      std::string err;
+      std::unique_ptr<Serdes::Avro> srds(Serdes::Avro::create(conf.get(), err));
+      if (!srds) throw kafarr::err("failed to create serdes. ", err);
       
       return srds;
     }

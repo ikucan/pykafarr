@@ -32,24 +32,24 @@ namespace kafarr {
    */  
   class bse{
   protected:
-    std::unique_ptr<Serdes::Avro> _srds;
+    std::shared_ptr<Serdes::Conf>   _srds_conf;
+    std::shared_ptr<Serdes::Handle> _srds_hndl;
+    std::unique_ptr<Serdes::Avro>   _srds_avro;
     
   public:
     bse() = delete;
-    bse(const std::string& reg_url):_srds(kfk_hlpr::mk_srds(reg_url))
-    {
-      //std::cerr << "bse::bse(..)\n";
-    }
-    
-    virtual ~bse(){
-      //std::cerr << "bse::~bse()\n";
-    }
+    bse(const std::string& reg_url) :
+      _srds_conf(kfk_hlpr::mk_srds_conf(reg_url)),
+      _srds_hndl(kfk_hlpr::mk_srds_hndl(_srds_conf)),
+      _srds_avro(kfk_hlpr::mk_avro(_srds_conf))
+    {}    
+    virtual ~bse(){}
   };
 
   /**
    *
    */
-  class lstnr : bse {
+  class lstnr : protected bse {
   private :
     const int RD_KFK_POLL_MS = 5;
     const std::unique_ptr<RdKafka::KafkaConsumer> _cnsmr;
@@ -128,7 +128,7 @@ namespace kafarr {
 		// std::cerr << "DEBUG:>> time waiting for the first message: " <<  (t00 - t0) << "ms" <<  std::endl;
 		_val_blck_sch_id = msg_val_sch_id;
 
-		if(_srds->deserialize(&schema, &dtm, msg->payload(), msg->len(), err) == -1)
+		if(_srds_avro->deserialize(&schema, &dtm, msg->payload(), msg->len(), err) == -1)
 		  throw kafarr::err(" failed to deserialise messge: ", err);
 
 		std::tuple<std::string, std::shared_ptr<arrow::Schema>> res = avr_hlpr::mk_arrw_schm(schema);
@@ -139,7 +139,7 @@ namespace kafarr {
 		delete dtm;
 	      }
 	      else if(_val_blck_sch_id == msg_val_sch_id) {
-		if(_srds->deserialize(&schema, &dtm, msg->payload(), msg->len(), err) == -1)
+		if(_srds_avro->deserialize(&schema, &dtm, msg->payload(), msg->len(), err) == -1)
 		  throw kafarr::err(" failed to deserialise messge: ", err);
 		avr_hlpr::rd_dta(msg->offset(), dtm, bldr);
 		delete dtm;
@@ -216,9 +216,8 @@ namespace kafarr {
   public:
     void send(const std::string& msg_typ, std::shared_ptr<arrow::Table> tbl) {
       std::cerr << "Writing message type : " << msg_typ << std::endl;
-
       std::cerr << "data table # columns : " << tbl->num_columns() << std::endl;
-
+      
       for (auto i = 0; i < tbl->num_columns(); ++i) {
 	auto col = tbl->column(i);
 	std::cerr << "col #" << i << " :: name: " << col->name() << " :: length: " << col->length() << std::endl;	
@@ -227,43 +226,96 @@ namespace kafarr {
       // get the serdes schema for the message type
       {
 	std::string err;
-
-	const std::unique_ptr <Serdes::Conf> sconf(Serdes::Conf::create());
-	if (sconf->set("schema.registry.url", "http://kfk:8081", err)) throw kafarr::err("failed to set schema url. ", err);
-	if (sconf->set("deserializer.framing", "cp1", err)) throw kafarr::err("faled to set framing. ", err);
-
-	//auto hndl = Serdes::Handle::create(NULL, _err);
-	Serdes::Handle* hndl = Serdes::Handle::create(sconf.get(), err);
-	if (!hndl) std::cerr << "ERROR retrieving the handle:>> " << err << std::endl;
-
 	///auto schm = Serdes::Schema::get(hndl, msg_typ, err);
-	Serdes::Schema* schm = Serdes::Schema::get(hndl, msg_typ, err);
-	if (!schm) std::cerr << "ERROR retrieving the schema for message type: " << msg_typ << ". error: " << err << std::endl;
+	Serdes::Schema* schm = Serdes::Schema::get(_srds_hndl.get(), msg_typ, err);
+	if (!schm) {
+	  std::stringstream ss ;
+	  ss << "ERROR retrieving the schema for message type: " << msg_typ << ". error: " << err << std::endl;
+	  ss << "Make sure it exists or supply it directly";
+	  std::cerr << ss.str() << std::endl;	  
+
+	  throw kafarr::err(ss.str());
+	}
+
+	//avro::ValidSchema* avro_schm = schm->object();
+	auto avr_schm = schm->object();
+	if (!avr_schm) throw kafarr::err("ERROR. Invalid avro schema object");
+
+	auto root = avr_schm->root();
+	
+	if(root->name().fullname() != msg_typ){
+	  std::stringstream ss ;
+	  ss << "ERROR. type name mismatch.\n";
+	  ss << "  requested type: " << msg_typ << std::endl;
+	  ss << "  retrieved type: " << root->name().fullname();
+	  std::cerr << ss.str() << std::endl;
+	  
+	  throw kafarr::err(ss.str());
+	}
+
+	/**
+	 * get the schema from the table and check that it contains all the fields required 
+	 */
+	auto tbl_schm = tbl->schema();
+	for(int i = 0; i < root->leaves(); ++i){
+	  //root->nameAt(i));
+	  auto lf = root->leafAt(i);
+	  if (!lf) throw kafarr::err("BUG. leaf node is null", root->nameAt(i));
+	  std::cerr << " AVRO schema field @" << i << " :: " << root->nameAt(i) << " : " << lf->type() << std::endl;
+
+	  if(tbl_schm->GetFieldByName(root->nameAt(i)))
+	    std::cerr << " table contains schema field: " << root->nameAt(i) << std::endl;
+	  else{
+	    std::cerr << " ERROR. schema field is missing: " << root->nameAt(i) << std::endl;
+	    throw kafarr::err("ERROR. schema field is missing: ", root->nameAt(i));
+	  }
+	}
+
 
 	{
-	  std::stringstream ss;
-	  avro::ValidSchema* avro_schm = schm->object();
-	  avro_schm->toJson(ss);
-	  std::cerr << "SCHEMA IS: " << ss.str() << std::endl;
-	}	
+	  avro::GenericDatum* dtm = new avro::GenericDatum(*avr_schm);	  
+	  if (dtm->type() != avro::Type::AVRO_RECORD) {
+	    std::stringstream msg("BUG!. Top-level Avro datum needst to be record type but is ");
+	    msg << dtm->type();
+	    std::cerr << msg.str() << std::endl;
+	    throw kafarr::err(msg.str());
+	  }
+
+	  // extract the record value from the row datum
+	  auto rcrd = dtm->value<avro::GenericRecord>();
+	  // extract and compare number of avro and arrow fields. they should match
+	  auto n_avr_flds = rcrd.fieldCount();
+	  for (auto i = 0; i < n_avr_flds; ++i) {
+	    auto fld = rcrd.fieldAt(i);
+	    std::cerr << "XX " << fld.type() << std::endl;
+
+	    switch (fld.type()) {
+	    case avro::Type::AVRO_STRING:
+	      break;
+	    case avro::Type::AVRO_INT: {
+	      int& v = fld.value<int>();
+	      v = -11;
+	    }
+	      break;
+	    case avro::Type::AVRO_LONG:
+	      break;
+	    case avro::Type::AVRO_FLOAT: 
+	      break;
+	    case avro::Type::AVRO_DOUBLE:
+	      break;
+	    default:{
+	      std::stringstream msg("BUG!. Avro type not handled:");
+	      msg << fld.type();
+	      throw kafarr::err(msg.str());
+	    }
+	    }
+	  }
+	      //if (root->name().fullname().length() < 1)
+	      //  throw kafarr::err("ERROR. Expecting root node to have a non-empty name.");      
+	}
       }
     }
-
-  private:
-    /**
-     * use serdes to decode the message
-     std::tuple<std::shared_ptr<Serdes::Schema>, std::shared_ptr<avro::GenericDatum> > get_msg_schma(const void *buff, size_t len) {
-     avro::GenericDatum *d = NULL;
-     Serdes::Schema* schema = NULL;
-     std::string _err;`
-     if(_srds->deserialize(&schema, &d, buff, len, _err) == -1)
-     throw kafarr::err(" failed to deserialise messge: ", _err);
-     return {std::unique_ptr<Serdes::Schema>(schema), std::shared_ptr<avro::GenericDatum>(d)};
-     }
-    */
-    
-  };
-  
+  };  
 }
 
 #endif //  __INCLUDE_KAFARR_HPP__

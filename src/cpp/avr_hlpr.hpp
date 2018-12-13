@@ -65,7 +65,7 @@ namespace kafarr {
       }
       // insert a message offset field
       // TODO:>>this is someahat hard-coded
-            arrw_flds.push_back(arrow::field("offst", arrow::int64()));
+      arrw_flds.push_back(arrow::field("offst", arrow::int64()));
       return {root->name().fullname(), std::make_shared<arrow::Schema>(arrw_flds, nullptr)};
     }
 
