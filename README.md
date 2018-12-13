@@ -1,10 +1,17 @@
 ### Pykafarr is a library for efficientlly streaming typed Kafka messages in Python
 
-Pykafarr provides a fast, batching Kafka client. Messages are read on Kafka and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client.
+Pykafarr provides a fast, batching Kafka client. Messages are read on Kafka and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client. Several messages can be returned as a result of a single _"poll"_ to Kafka. As a result the overhead costs of the Python VM are minimised. Data is also returned in a Python-friendly format, arguably one of the preferred formats.
 
-The data frame contains a column for each field of the message as defined in its Avro schema. There is an additional metadata column for the message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. If A,A,A,A,A,B,B,B,B,B arrive the _poll(MaxInt, MaxInt)_ will return early with 5 rows of A. The subsequent invocation will return 5 rows of B. This behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as A,B,A,B,A,B....
+The data frame contains a column for each field of the message as defined in its Avro schema. There is an additional metadata column for the message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. If
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{A_1,A_2,...,A_m,B_1,...,B_n\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{A_1,A_2,...,A_m,B_1,...,B_n\}" title="\{A_1,A_2,...,A_m,B_1,...,B_n\}" /></a>
+arrive the _poll(MaxInt, MaxInt)_ will return early with _m_ rows of _A_
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{A_1,A_2,...,A_m\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{A_1,A_2,...,A_m\}" title="\{A_1,A_2,...,A_m\}" /></a>
+. Subsequent invocation will return _n_ rows of _B_:
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{B_1,...,B_n\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{B_1,...,B_n\}" title="\{B_1,...,B_n\}" /></a>
+. This behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{A_1,&space;B_1,&space;A_2,&space;B_2,&space;A_3,&space;B_3...\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{A_1,&space;B_1,&space;A_2,&space;B_2,&space;A_3,&space;B_3...\}" title="\{A_1, B_1, A_2, B_2, A_3, B_3...\}" /></a>
 
-The c++ part of codebase is fully independent of Python and can be used directly from c++. In that case you are working with Apache::Arrow structures to interface with Kafka.
+The C++ implemenation is fully independent and unaware of Python and can be used directly from C++. In that case you are working with ```apache::arrow``` structures to interface with Kafka.
 
 #### Performance:
 While no time has been spent on optimisations it is already reasonably performant. Pykafarr can read, parse and package into Pandas 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests on an underwhelming old laptop in a single-host setup. Reading from a remote kafka topic would change the numbers depending on your network latency.
