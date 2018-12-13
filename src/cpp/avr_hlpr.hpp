@@ -33,9 +33,37 @@ namespace kafarr {
 	encdr->flush();
 	std::cerr << "AVRO 2 JSON transform done. data: " << oss.str() << std::endl;    
       } catch(const avro::Exception &e) {
-	std::cerr << "AVRO 2 JSON transform failed. error: " << e.what() << std::endl;
+	std::cerr << "ERROR: Avro to JSON transform failed. error: " << e.what() << std::endl;
+	throw kafarr::err("ERROR: Avro to JSON transform failed. error: ", e.what());
       }
     }
+
+    /**
+     * convert data from JSON to avro
+     * COPIED from : https://github.com/confluentinc/libserdes/blob/master/examples/kafka-serdes-avro-console-producer.cpp
+     */
+    static int json2avro (Serdes::Schema *schema, const std::string &json, avro::GenericDatum **datump) {
+      avro::ValidSchema *avro_schema = schema->object();
+      /* Input stream from json string */
+      std::istringstream iss(json);
+      std::auto_ptr<avro::InputStream> json_is = avro::istreamInputStream(iss);
+
+      /* JSON decoder */
+      avro::DecoderPtr json_decoder = avro::jsonDecoder(*avro_schema);
+      avro::GenericDatum *datum = new avro::GenericDatum(*avro_schema);
+
+      try {
+	/* Decode JSON to Avro datum */
+	json_decoder->init(*json_is);
+	avro::decode(*json_decoder, *datum);
+      } catch (const avro::Exception &e) {
+	std::cerr << "ERROR: JSON to Avro transform failed. error: " << e.what() << std::endl;
+	throw kafarr::err("ERROR: JSON to Avro transform failed. error: ", e.what());
+      }      
+      *datump = datum;
+      return 0;
+    }
+    
 
 
     /**
