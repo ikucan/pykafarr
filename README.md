@@ -2,11 +2,11 @@
 
 Pykafarr provides a fast, batching Kafka client. Messages are read on Kafka and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client. Several messages can be returned as a result of a single _"poll"_ to Kafka. As a result the overhead costs of the Python VM are minimised. Data is also returned in a Python-friendly format, arguably one of the preferred formats.
 
-The data frame contains a column for each field of the message as defined in its Avro schema. There is an additional metadata column for the message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. If
+Returned data frame contains a column for each field of the message as defined in its Avro schema. There is an additional metadata column for the message offset. Frames are guaranteed to be homogenous - only messages from one schema will be included in a frame. If there is a message schema change the _poll_ will return early. If
 <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{A_1,A_2,...,A_m,B_1,...,B_n\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{A_1,A_2,...,A_m,B_1,...,B_n\}" title="\{A_1,A_2,...,A_m,B_1,...,B_n\}" /></a>
-arrive the _poll(MaxInt, MaxInt)_ will return early with _m_ rows of _A_
+arrive the _poll(MaxInt, MaxInt)_ will return early with _m_ rows 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{A_1,A_2,...,A_m\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{A_1,A_2,...,A_m\}" title="\{A_1,A_2,...,A_m\}" /></a>
-. Subsequent invocation will return _n_ rows of _B_:
+. Subsequent invocation will return _n_ rows 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{B_1,...,B_n\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{B_1,...,B_n\}" title="\{B_1,...,B_n\}" /></a>
 . This behaviour erodes some of the efficiencies if we typically receive messages with mixed schemas, such as
 <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;\{A_1,&space;B_1,&space;A_2,&space;B_2,&space;A_3,&space;B_3...\}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;\{A_1,&space;B_1,&space;A_2,&space;B_2,&space;A_3,&space;B_3...\}" title="\{A_1, B_1, A_2, B_2, A_3, B_3...\}" /></a>
