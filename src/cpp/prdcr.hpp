@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_KAFARR_HPP__
-#define __INCLUDE_KAFARR_HPP__
+#ifndef __INCLUDE_PRDCR_HPP__
+#define __INCLUDE_PRDCR_HPP__
 
 #include <memory>
 #include <algorithm>
@@ -22,33 +22,15 @@
 
 
 #include "err.hpp"
+#include "kfk_bse.hpp"
 #include "kfk_hlpr.hpp"
 #include "avr_hlpr.hpp"
 
 namespace kafarr {
   /**
    *
-   */  
-  class bse{
-  protected:
-    std::shared_ptr<Serdes::Conf>   _srds_conf;
-    std::shared_ptr<Serdes::Handle> _srds_hndl;
-    std::unique_ptr<Serdes::Avro>   _srds_avro;
-    
-  public:
-    bse() = delete;
-    bse(const std::string& reg_url) :
-      _srds_conf(kfk_hlpr::mk_srds_conf(reg_url)),
-      _srds_hndl(kfk_hlpr::mk_srds_hndl(_srds_conf)),
-      _srds_avro(kfk_hlpr::mk_avro(_srds_conf))
-    {}    
-    virtual ~bse(){}
-  };
-
-  /**
-   *
    */
-  class lstnr : protected bse {
+  class prdcr : protected kfk_bse {
   private :
     const int RD_KFK_POLL_MS = 5;
     const std::unique_ptr<RdKafka::KafkaConsumer> _cnsmr;
@@ -56,11 +38,11 @@ namespace kafarr {
     bool first_call = true;
     
   public:
-    lstnr() = delete;
-    lstnr(const std::string& srvr_lst,
+    prdcr() = delete;
+    prdcr(const std::string& srvr_lst,
 	  const std::string& grp,
 	  const std::vector<std::string>& tpcs,
-	  const std::string& reg_url) : bse(reg_url),_cnsmr(kfk_hlpr::mk_kfk_cnsmr(grp, srvr_lst))
+	  const std::string& reg_url) : kfk_bse(reg_url),_cnsmr(kfk_hlpr::mk_kfk_cnsmr(grp, srvr_lst))
     {      
       auto err = _cnsmr->subscribe(tpcs);       
       
@@ -76,7 +58,7 @@ namespace kafarr {
     /**
      * destructor
      */
-    ~lstnr(){
+    ~prdcr(){
       _cnsmr->close();
     }
 
@@ -358,4 +340,4 @@ namespace kafarr {
   };  
 }
 
-#endif //  __INCLUDE_KAFARR_HPP__
+#endif //  __INCLUDE_PRDCR_HPP__

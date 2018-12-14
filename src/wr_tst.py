@@ -33,7 +33,7 @@ grp_id  = ('test_grp_' + str(r.randint(10000, 20000))).encode('utf-8')
 tpcs    = ['test_topic_2'.encode('utf-8')]
 reg_url = 'http://kfk:8081'.encode('utf-8')
 
-p = pykafarr.listener(srvrs, grp_id, tpcs, reg_url)
+p = pykafarr.producer(srvrs, grp_id, tpcs, reg_url)
 data = gen_ticks(20)
 
 
