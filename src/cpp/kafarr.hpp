@@ -346,10 +346,11 @@ namespace kafarr {
 	  throw kafarr::err("failed to create kafka topic: ", err);
 	}
 
-	RdKafka::ErrorCode kerr = producer->produce(ktopic, -1, &out, NULL, NULL);
-
-	if (kerr != RdKafka::ERR_NO_ERROR) {
-	  std::cerr << "% Failed to produce message: " << RdKafka::err2str(kerr) << std::endl;
+	for(auto i = 0; i < 10; ++i){
+	  RdKafka::ErrorCode kerr = producer->produce(ktopic, -1, &out, NULL, NULL);	  
+	  if (kerr != RdKafka::ERR_NO_ERROR) 
+	    std::cerr << "% Failed to produce message: " << RdKafka::err2str(kerr) << std::endl;
+	  
 	}
       }
 	
