@@ -20,7 +20,6 @@
 #include "arrow/builder.h"
 #include "arrow/memory_pool.h"
 
-
 #include "err.hpp"
 #include "kfk_bse.hpp"
 #include "kfk_hlpr.hpp"
@@ -53,7 +52,6 @@ namespace kafarr {
       	throw kafarr::err(msg);
       }
     }
-    
   public:
     /**
      * destructor
@@ -61,8 +59,6 @@ namespace kafarr {
     ~lstnr(){
       _cnsmr->close();
     }
-
-  private:
     
   public:
     std::string poll(int n_msgs, std::shared_ptr<arrow::RecordBatch>* out, int max_tme_ms = 1000, int max_catchup_tme = 30000) {
@@ -183,12 +179,6 @@ namespace kafarr {
       if(n > 0) bldr->Flush(out);
 
       return schema_name;
-    }
-
-    // TODO:>>  
-    void ex_tst(const std::string& msg) {      
-      std::cerr << "about to throw TEST exception: " << msg << "\n";
-      throw kafarr::err("thrown TEST exception. msg: " + msg);
     }
   };  
 }
