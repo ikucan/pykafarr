@@ -33,7 +33,6 @@ namespace kafarr {
   class prdcr : protected kfk_bse {
   private :
     const int RD_KFK_POLL_MS = 5;
-    const std::unique_ptr<RdKafka::KafkaConsumer> _cnsmr;
     const std::unique_ptr<RdKafka::KafkaConsumer> _prdcr;
     bool first_call = true;
     
@@ -42,16 +41,8 @@ namespace kafarr {
     prdcr(const std::string& srvr_lst,
 	  const std::string& grp,
 	  const std::vector<std::string>& tpcs,
-	  const std::string& reg_url) : kfk_bse(reg_url),_cnsmr(kfk_hlpr::mk_kfk_cnsmr(grp, srvr_lst))
+	  const std::string& reg_url) : kfk_bse(reg_url)
     {      
-      auto err = _cnsmr->subscribe(tpcs);       
-      
-      if (err != RdKafka::ErrorCode::ERR_NO_ERROR){
-	std::string msg = "failed to subscribe to topics: ";
-	std::for_each(tpcs.begin(), tpcs.end(), [&](auto tpc){msg.append(tpc).append(", ");});	
-      	msg.append(RdKafka::err2str(err));
-      	throw kafarr::err(msg);
-      }
     }
     
   public:
@@ -59,7 +50,6 @@ namespace kafarr {
      * destructor
      */
     ~prdcr(){
-      _cnsmr->close();
     }
 
   public:
@@ -117,9 +107,18 @@ namespace kafarr {
 	  std::cerr << " ERROR. schema field is missing: " << root->nameAt(i) << std::endl;
 	  throw kafarr::err("ERROR. schema field is missing: ", root->nameAt(i));
 	}
-	
-	
-	if (false){
+      }
+
+      avro::GenericDatum* dtm = new avro::GenericDatum(avr_schm->root());
+      avro::GenericRecord& r = dtm->value<avro::GenericRecord>();
+      r.fieldAt(0).value<std::string>() = "XXXXX";
+      r.fieldAt(1).value<int64_t>() = 15987645234l;
+      r.fieldAt(2).value<int32_t>() = 432;
+      r.fieldAt(3).value<float>() = 1.2345f;
+      r.fieldAt(4).value<float>() = 1.3245f;
+      
+      if (false){
+	{	
 	  avro::GenericDatum* dtm = new avro::GenericDatum(*avr_schm);	  
 	  if (dtm->type() != avro::Type::AVRO_RECORD) {
 	    std::stringstream msg("BUG!. Top-level Avro datum needst to be record type but is ");
@@ -161,12 +160,13 @@ namespace kafarr {
       }
 	
       if(true){
-	std::string jsn = "{\"inst\": \"abcd\", \"t\":12345, \"dt\":3, \"bid\":1.2345, \"ask\":1.2345}";
+	//std::string jsn = "{\"inst\": \"abcd\", \"t\":12345, \"dt\":3, \"bid\":1.2345, \"ask\":1.2345}";
 	avro::GenericDatum *datum = NULL;
 	std::vector<char> out;
 
-	avr_hlpr::json2avro(schm, jsn, &datum);
-
+	//avr_hlpr::json2avro(schm, jsn, &datum);
+	datum = dtm;
+	
 	/* Serialize Avro */
 	if(_srds_avro->serialize(schm, datum, out, err) == -1)
 	  throw kafarr::err("failed to serialise message: ", err);
@@ -200,6 +200,8 @@ namespace kafarr {
 	  if (kerr != RdKafka::ERR_NO_ERROR) 
 	    std::cerr << "% Failed to produce message: " << RdKafka::err2str(kerr) << std::endl;	  
 	}
+
+	producer->flush(30000);
       }
 	
     }

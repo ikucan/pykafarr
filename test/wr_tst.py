@@ -1,3 +1,5 @@
+import rel_pth
+
 import pykafarr
 import sys
 import random as r
@@ -7,7 +9,6 @@ from   time import time
 
 def cstr(s):
     return s.encode('utf-8')
-
 
 ##
 ## helper method. generates a data frame with some stuff in it
@@ -22,9 +23,9 @@ def gen_ticks(n):
   ask   = mid + sprd
   return pd.DataFrame({'inst':instr, 't':tms, 'dt':dt, 'bid':bid, 'ask':ask})
 
-#
-# main 
-#
+##
+## main 
+##
 print('------------------')
 #lst     = [str(i*10 + 2).encode('utf-8') for i in range(1, 4)]
 srvrs   = 'kfk:9092'.encode('utf-8')

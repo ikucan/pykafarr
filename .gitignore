@@ -46,3 +46,5 @@ a.out
 #python build/distro specific
 *.egg-info/
 dist/
+__pycache__/
+

@@ -33,7 +33,6 @@ namespace kafarr {
   private :
     const int RD_KFK_POLL_MS = 5;
     const std::unique_ptr<RdKafka::KafkaConsumer> _cnsmr;
-    const std::unique_ptr<RdKafka::KafkaConsumer> _prdcr;
     bool first_call = true;
     
   public:

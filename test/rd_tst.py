@@ -1,4 +1,4 @@
-import tst
+import rel_pth
 
 import pykafarr
 import sys

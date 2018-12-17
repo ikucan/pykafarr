@@ -1,9 +1,58 @@
 #include <iostream>
-#include "kafarr.hpp"
+#include <prdcr.hpp>
 
 #include <unistd.h>
 #include <limits.h>
 
+std::shared_ptr< arrow::Table > mk_tck_tbl(const int n) {
+  const std::string msg_typ = "avros.pricing.ig.Tick";
+  
+  std::shared_ptr<Serdes::Conf>   srds_conf = kafarr::kfk_hlpr::mk_srds_conf("kfk:8081");
+  std::shared_ptr<Serdes::Handle> srds_hndl = kafarr::kfk_hlpr::mk_srds_hndl(srds_conf);
+  
+  std::string err;
+  Serdes::Schema* schm = Serdes::Schema::get(srds_hndl.get(), msg_typ, err);
+  std::tuple<std::string, std::shared_ptr<arrow::Schema>> res = kafarr::avr_hlpr::mk_arrw_schm(schm);
+  std::cerr << "arrow schema name:: " << std::get<0>(res) << std::endl;
+  if(msg_typ != std::get<0>(res)){
+    std::stringstream ss ;
+    ss << "ERROR:: message type mismatch. Expected: " << msg_typ << " but received: " << std::get<0>(res);
+    std::cerr << ss.str() << std::endl;
+    throw kafarr::err(ss.str());
+  }
+
+  /**
+   * remove the offset field when sending
+   */
+  std::shared_ptr<arrow::Schema> schm2;
+  std::get<1>(res)->RemoveField(5, &schm2);
+  
+  std::unique_ptr<arrow::RecordBatchBuilder> bldr;
+  auto pool = arrow::default_memory_pool();
+  arrow::RecordBatchBuilder::Make(schm2, pool, &bldr);
+
+  std::cerr << bldr->num_fields() << std::endl;
+  for(auto i = 0; i < 100; ++i){
+    for (auto i = 0; i < bldr->num_fields(); ++i) {
+      auto fld = bldr->GetField(i);
+      //std::cerr << "fld(" << i<< "): " << fld->type()->name() << std::endl;
+      if(i == 0)      static_cast<arrow::StringBuilder *>(fld)->Append("xxxx");
+      else if(i == 1) static_cast<arrow::Int64Builder  *>(fld)->Append(123345443l);
+      else if(i == 2) static_cast<arrow::Int32Builder  *>(fld)->Append(234);
+      else if(i == 3) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.2f);
+      else if(i == 4) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f);
+    }
+  }
+
+  std::shared_ptr<arrow::RecordBatch> batch;
+  bldr->Flush(&batch);
+  
+  std::shared_ptr< arrow::Table > table;
+  std::vector< std::shared_ptr< arrow::RecordBatch > >  batches = {batch};
+  auto status =  arrow::Table::FromRecordBatches(batches, &table);
+
+  return table;
+}
 
 /**
  * main
@@ -16,44 +65,19 @@ int main(int argc, char** argv) {
   gethostname(hostname, HOST_NAME_MAX);
   std::string kfk_hst = hostname;
   if(argc == 2) kfk_hst = argv[1];
-  
+
+  const std::string tck_msg_typ = "avros.pricing.ig.Tick";
+
   std::cerr << "kafka host: " << kfk_hst << std::endl;  
 
   try{
-    //kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"CS.D.GBPUSD.MINI.IP_TOPICX"}, "http://" + kfk_hst + ":8081");
-    kafarr::lstnr l(kfk_hst, "cpp_tst_grp" , {"test_topic_1"}, "http://" + kfk_hst + ":8081");
+    auto tck_tbl = mk_tck_tbl(10);
 
-    auto go = true;
-    auto n = 0;
-    while(go) {
-      std::shared_ptr<arrow::RecordBatch> rcrds;
-      auto name = l.poll(200, &rcrds, 5000);
-      
-      if(rcrds){
-	std::cerr << "--------------------------------------------\n";
-	std::cerr << "Batch #: " << n << "\n";
-	std::cerr << "--------------------------------------------\n";
-	std::cerr << "message name: " << name << std::endl;
-	std::cerr << "#cols: " << rcrds->num_columns() << std::endl;
-	std::cerr << "#rows: " << rcrds->num_rows() << std::endl;
-	
-	for(int i = 0; i < rcrds->num_columns(); ++i) {
-	  auto col =  rcrds->column(i);
-	  //std::cerr << rcrds->column_name(i) << "[" << col->type()->ToString() << "] : ";
-	  if(rcrds->column_name(i) == "offst" ){
-	    std::cerr << rcrds->column_name(i) << "[" << col->type()->ToString() << "] : ";
-	    std::cerr << col->ToString();
-	    std::cerr << std::endl;
-	  }
-	}
-	std::cerr << "--------------------------------------------\n";
-	std::cerr << "--------------------------------------------\n";
-	n += 1;
-	if (n > 10) go = false;
-      }
-    }
+    kafarr::prdcr p(kfk_hst, "cpp_tst_grp" , {"test_topic_1"}, "http://" + kfk_hst + ":8081");
+    p.send(tck_msg_typ, tck_tbl);
+
   }
-  catch (const kafarr::err& ke) {
+  catch (const kafarr::err& ke){
     std::cerr << "ERROR caught:>> " << ke.msg() << "\n" ;
   }
   catch(...) {
