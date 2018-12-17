@@ -1,6 +1,8 @@
 #ifndef __INCLUDE_PRDCR_HPP__
 #define __INCLUDE_PRDCR_HPP__
 
+#include "arr_tbl_dcdr.hpp"
+
 #include <memory>
 #include <algorithm>
 #include <chrono>
@@ -53,6 +55,34 @@ namespace kafarr {
     }
 
   public:
+    void send2(const std::string& msg_typ, std::shared_ptr<arrow::Table> tbl) {
+      std::cerr << "Writing message type : " << msg_typ << std::endl;
+      std::cerr << "data table # columns : " << tbl->num_columns() << std::endl;
+
+      // general purpose error message string used in many calls below
+      std::string err;
+
+      /**
+       * get the schema for the message first
+       */
+      auto schm = std::shared_ptr<Serdes::Schema>(Serdes::Schema::get(_srds_hndl.get(), msg_typ, err));
+      //Serdes::Schema* schm = Serdes::Schema::get(_srds_hndl.get(), msg_typ, err);
+      if (!schm) {
+	std::stringstream ss ;
+	ss << "ERROR retrieving the schema for message type: " << msg_typ << ". error: " << err << std::endl;
+	ss << "Make sure it exists or supply it directly";
+	std::cerr << ss.str() << std::endl;	  	
+	throw kafarr::err(ss.str());
+      }
+      arr_tbl_dcdr::arr2avr(tbl, schm);
+      
+      /**
+       * take the arrow table and serialise it to a vector of generic avro objects
+       */
+      
+    }
+
+    
     void send(const std::string& msg_typ, std::shared_ptr<arrow::Table> tbl) {
       std::cerr << "Writing message type : " << msg_typ << std::endl;
       std::cerr << "data table # columns : " << tbl->num_columns() << std::endl;
@@ -65,6 +95,7 @@ namespace kafarr {
       // get the serdes schema for the message type
       std::string err;
       ///auto schm = Serdes::Schema::get(hndl, msg_typ, err);
+      //Serdes::Schema* schm = Serdes::Schema::get(_srds_hndl.get(), msg_typ, err);
       Serdes::Schema* schm = Serdes::Schema::get(_srds_hndl.get(), msg_typ, err);
       if (!schm) {
 	std::stringstream ss ;
@@ -160,12 +191,13 @@ namespace kafarr {
       }
 	
       if(true){
-	//std::string jsn = "{\"inst\": \"abcd\", \"t\":12345, \"dt\":3, \"bid\":1.2345, \"ask\":1.2345}";
+	//std::string jsn = "{\"inst\": \"abcd\", \"t\":12345, \"dt\":3, \"bid\":2.2222, \"ask\":1.1111}";
+	std::string jsn = "{\"inst\": \"abcd\", \"t\":12345, \"dt\":3, \"ask\":2.2222, \"bid\":1.1111}";
 	avro::GenericDatum *datum = NULL;
 	std::vector<char> out;
 
-	//avr_hlpr::json2avro(schm, jsn, &datum);
-	datum = dtm;
+	avr_hlpr::json2avro(schm, jsn, &datum);
+	//datum = dtm;
 	
 	/* Serialize Avro */
 	if(_srds_avro->serialize(schm, datum, out, err) == -1)

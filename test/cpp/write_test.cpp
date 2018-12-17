@@ -72,10 +72,8 @@ int main(int argc, char** argv) {
 
   try{
     auto tck_tbl = mk_tck_tbl(10);
-
     kafarr::prdcr p(kfk_hst, "cpp_tst_grp" , {"test_topic_1"}, "http://" + kfk_hst + ":8081");
-    p.send(tck_msg_typ, tck_tbl);
-
+    p.send2(tck_msg_typ, tck_tbl);
   }
   catch (const kafarr::err& ke){
     std::cerr << "ERROR caught:>> " << ke.msg() << "\n" ;
@@ -85,4 +83,3 @@ int main(int argc, char** argv) {
   }
   std::cerr << "\n" ;
 }
-
