@@ -6,6 +6,7 @@
 #include <libserdes/serdescpp-avro.h>
 #include "arrow/table.h"
 
+#include "err.hpp"
 
 namespace kafarr {
 
@@ -35,15 +36,15 @@ namespace kafarr {
        */
       for(int i = 0; i < avr_root_nd->leaves(); ++i){
 	//root->nameAt(i));
-	auto lf = root->leafAt(i);
-	if (!lf) throw kafarr::err("BUG. leaf node is null", root->nameAt(i));
-	std::cerr << " AVRO schema field @" << i << " :: " << root->nameAt(i) << " : " << lf->type() << std::endl;
+	auto lf = avr_root_nd->leafAt(i);
+	if (!lf) throw kafarr::err("BUG. leaf node is null", avr_root_nd->nameAt(i));
+	std::cerr << " AVRO schema field @" << i << " :: " << avr_root_nd->nameAt(i) << " : " << lf->type() << std::endl;
 	
-	if(tbl_schm->GetFieldByName(root->nameAt(i)))
-	  std::cerr << " table contains schema field: " << root->nameAt(i) << std::endl;
+	if(arr_schm->GetFieldByName(avr_root_nd->nameAt(i)))
+	  std::cerr << " table contains schema field: " << avr_root_nd->nameAt(i) << std::endl;
 	else{
-	  std::cerr << " ERROR. schema field is missing: " << root->nameAt(i) << std::endl;
-	  throw kafarr::err("ERROR. schema field is missing: ", root->nameAt(i));
+	  std::cerr << " ERROR. schema field is missing: " << avr_root_nd->nameAt(i) << std::endl;
+	  throw kafarr::err("ERROR. schema field is missing: ", avr_root_nd->nameAt(i));
 	}
       }
       

@@ -51,8 +51,7 @@ namespace kafarr {
     /**
      * destructor
      */
-    ~prdcr(){
-    }
+    ~prdcr(){}
 
   public:
     void send2(const std::string& msg_typ, std::shared_ptr<arrow::Table> tbl) {
