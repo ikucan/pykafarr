@@ -33,14 +33,14 @@ std::shared_ptr< arrow::Table > mk_tck_tbl(const int n) {
 
   std::cerr << bldr->num_fields() << std::endl;
   for(auto i = 0; i < 100; ++i){
-    for (auto i = 0; i < bldr->num_fields(); ++i) {
-      auto fld = bldr->GetField(i);
+    for (auto j = 0; j < bldr->num_fields(); ++j) {
+      auto fld = bldr->GetField(j);
       //std::cerr << "fld(" << i<< "): " << fld->type()->name() << std::endl;
-      if(i == 0)      static_cast<arrow::StringBuilder *>(fld)->Append("xxxx");
-      else if(i == 1) static_cast<arrow::Int64Builder  *>(fld)->Append(123345443l);
-      else if(i == 2) static_cast<arrow::Int32Builder  *>(fld)->Append(234);
-      else if(i == 3) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.2f);
-      else if(i == 4) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f);
+      if(j == 0)      static_cast<arrow::StringBuilder *>(fld)->Append("xxxx");
+      else if(j == 1) static_cast<arrow::Int64Builder  *>(fld)->Append(1234554321l + i);
+      else if(j == 2) static_cast<arrow::Int32Builder  *>(fld)->Append(234);
+      else if(j == 3) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.2f);
+      else if(j == 4) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f);
     }
   }
 
