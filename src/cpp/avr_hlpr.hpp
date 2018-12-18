@@ -46,7 +46,10 @@ namespace kafarr {
       avro::ValidSchema *avro_schema = schema->object();
       /* Input stream from json string */
       std::istringstream iss(json);
-      std::auto_ptr<avro::InputStream> json_is = avro::istreamInputStream(iss);
+
+      // switch to auto to avoid  deprecation warning
+      //std::auto_ptr<avro::InputStream> json_is = avro::istreamInputStream(iss);
+      auto json_is = avro::istreamInputStream(iss);
 
       /* JSON decoder */
       avro::DecoderPtr json_decoder = avro::jsonDecoder(*avro_schema);
@@ -63,8 +66,6 @@ namespace kafarr {
       *datump = datum;
       return 0;
     }
-    
-
 
     /**
      * make an arrow schema from an avro schema

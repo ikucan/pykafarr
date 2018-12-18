@@ -73,7 +73,7 @@ namespace kafarr {
 	std::cerr << ss.str() << std::endl;	  	
 	throw kafarr::err(ss.str());
       }
-      arr_tbl_dcdr::arr2avr(tbl, schm);
+      std::vector<std::shared_ptr<avro::GenericDatum> > avro_data = arr_tbl_dcdr::arr2avr(tbl, schm);
       
       /**
        * take the arrow table and serialise it to a vector of generic avro objects

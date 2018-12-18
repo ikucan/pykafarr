@@ -36,11 +36,11 @@ std::shared_ptr< arrow::Table > mk_tck_tbl(const int n) {
     for (auto j = 0; j < bldr->num_fields(); ++j) {
       auto fld = bldr->GetField(j);
       //std::cerr << "fld(" << i<< "): " << fld->type()->name() << std::endl;
-      if(j == 0)      static_cast<arrow::StringBuilder *>(fld)->Append("xxxx");
+      if(j == 0)      static_cast<arrow::StringBuilder *>(fld)->Append("xxxx_" + std::to_string(i));
       else if(j == 1) static_cast<arrow::Int64Builder  *>(fld)->Append(1234554321l + i);
-      else if(j == 2) static_cast<arrow::Int32Builder  *>(fld)->Append(234);
-      else if(j == 3) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.2f);
-      else if(j == 4) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f);
+      else if(j == 2) static_cast<arrow::Int32Builder  *>(fld)->Append(234 + i);
+      else if(j == 3) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f - (i*1000.0f/10000.0f));
+      else if(j == 4) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f + (i*1000.0f/10000.0f));
     }
   }
 
