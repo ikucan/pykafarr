@@ -6,12 +6,7 @@
 #include <libserdes/serdescpp-avro.h>
 #include "arrow/table.h"
 
-//#include <avro/Decoder.hh>
 #include <avro/Generic.hh>
-//#include <avro/Specific.hh>
-//#include <avro/Exception.hh>
-//#include <avro/NodeImpl.hh>
-
 
 #include "err.hpp"
 
@@ -27,11 +22,9 @@ namespace kafarr {
      */
     static std::vector<std::shared_ptr<avro::GenericDatum> > arr2avr(const std::shared_ptr<arrow::Table> tbl, const std::shared_ptr<Serdes::Schema> schm){
       /**
-       * get the avro schema from the Serdes schema wrapper
-       * this is the schema sent messages need to conform to
+       * get the root node object
        */
-      const std::shared_ptr<avro::ValidSchema> avr_schm(schm->object());
-      const avro::NodePtr avr_root_nd = avr_schm->root();
+      const avro::NodePtr avr_root_nd = schm->object()->root();
 
       /**
        * extract the arrow schema from the table. 
@@ -51,7 +44,7 @@ namespace kafarr {
 	//root->nameAt(i));
         const avro::NodePtr lf = avr_root_nd->leafAt(i);
         if (!lf) throw kafarr::err("ERROR/BUG?. leaf node is unexpectedly null:", avr_root_nd->nameAt(i));
-        std::cerr << " AVRO schema field @" << i << " :: " << avr_root_nd->nameAt(i) << " : " << lf->type() << std::endl;
+        //std::cerr << " AVRO schema field @" << i << " :: " << avr_root_nd->nameAt(i) << " : " << lf->type() << std::endl;
 	
         const std::string avro_fld_nme = avr_root_nd->nameAt(i);
         const std::shared_ptr<arrow::Field> arr_fld = arr_schm->GetFieldByName(avro_fld_nme);
@@ -63,14 +56,10 @@ namespace kafarr {
           std::cerr << "ERROR. Field required byt the Avro schema is missing from the data table: " << avro_fld_nme << std::endl;
           throw kafarr::err("ERROR. Field required byt the Avro schema is missing from the data table: ", avr_root_nd->nameAt(i));
         }
-
-        std::cerr << "AVRO  field name: " << avro_fld_nme << ", type: " << lf->type() << std::endl;
-        std::cerr << "ARROW field name: " << arr_fld->name() << ", type: " << arr_fld->type()->name() << std::endl;
       }
       
       /**
-       * while at it!, check that the field data is not chunkedd. we dont want to handle cunked arrays just yet
-       * TODO:>> chunked arrays need to be handled eventually
+       * while at it!, check that the field data is not chunkedd. we cant handle cunked arrays atm
        */
       for(auto i = 0; i < tbl->num_columns(); ++i) {
 	const std::shared_ptr<arrow::Column> col = tbl->column(i);
@@ -81,42 +70,38 @@ namespace kafarr {
       }
       
       /**
-       * convert each row in the table
-       * NOTE:>> for now this is shallow. only one level and all member-types must be primitive
+       * convert each row in the table (shallow for now)
        */
-      std::vector<std::shared_ptr<avro::GenericDatum> > avro_data(tbl->num_rows());
-
-      //for (auto i = 0; i < 2; ++i){
+      std::vector<std::shared_ptr<avro::GenericDatum> > avro_data;
       for (auto i = 0; i < tbl->num_rows(); ++i){
 	std::shared_ptr<avro::GenericDatum> dtm(new avro::GenericDatum(avr_root_nd));
 	avro::GenericRecord& rcrd = dtm->value<avro::GenericRecord>();
 	
-	for(auto j = 0; j < rcrd.fieldCount(); ++j) {
-	  //const std::string avro_fld_nme = avr_root_nd->nameAt(j);
-	  const avro::NodePtr lf                   = avr_root_nd->leafAt(j);
-	  const std::shared_ptr<arrow::Column> col = tbl->column(j);
-
-	  //std::cerr << " AVRO schema field @" << j << " :: " << avr_root_nd->nameAt(j) << " : " << lf->type() << std::endl;
-	  //std::cerr << " ARROW column. name: " << col->name() << ". type: " << col->type()->name() << ". length:  " << col->length() << std::endl;
-	  //std::cerr << "     #chunks :  " << col->data()->num_chunks() << std::endl;
-
-	  bld_leaf_val(avr_root_nd->leafAt(j)->type(), col, rcrd.fieldAt(j), i);
-	}
+	for(auto j = 0; j < rcrd.fieldCount(); ++j) 
+	  bld_leaf_val(avr_root_nd->leafAt(j)->type(), tbl->column(j), rcrd.fieldAt(j), i);
+	
 	avro_data.push_back(dtm);
       }
       return avro_data;
     }
     
-    //static void bld_rcrd_val(const avro::Type avr_typ, const std::shared_ptr<arrow::Column> col, const avro::GenericDatum& dtm) {
+    /**
+     * check if the source schema type (Arrow) can be coerced into the target schema type (Avro)
+     * eg if target is int32, then source int8, int16 and int 32 are ok but int64 is not
+     */
+    //static void is_coercable(const avro::Type avr_typ, const std::shared_ptr<arrow::Column> col, const avro::GenericDatum& dtm) {
     //}
 
+    /**
+     * build a leaf value in the target AVRO datum
+     */ 
     static void bld_leaf_val(const avro::Type avr_typ, const std::shared_ptr<arrow::Column> col, avro::GenericDatum& col_dtm, const int row_idx) {
       /**
        * compare each AVRO target type with the source ARROW type
        * determine if the source type can be coerced to the target type
        * TODO:>> currentlly typing is strict - only perfectly matching types are accepted all others rejected. 
        *         in the future it would be nice to coerce types where possible (say ARROW int8 to AVRO int32 etc...)
-       * NOTE:>> this is the deepest loop. go with explicit casting for performance
+       * NOTE:>> this is the deepest loop. explicit cast for performance
        */
       switch (avr_typ) {
       case avro::Type::AVRO_INT    :

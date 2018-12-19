@@ -39,8 +39,8 @@ std::shared_ptr< arrow::Table > mk_tck_tbl(const int n) {
       if(j == 0)      static_cast<arrow::StringBuilder *>(fld)->Append("xxxx_" + std::to_string(i));
       else if(j == 1) static_cast<arrow::Int64Builder  *>(fld)->Append(1234554321l + i);
       else if(j == 2) static_cast<arrow::Int32Builder  *>(fld)->Append(234 + i);
-      else if(j == 3) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f - (i*1000.0f/10000.0f));
-      else if(j == 4) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f + (i*1000.0f/10000.0f));
+      else if(j == 3) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f - (i*10.0f/10000.0f));
+      else if(j == 4) static_cast<arrow::FloatBuilder  *>(fld)->Append(1.3f + (i*10.0f/10000.0f));
     }
   }
 
@@ -72,11 +72,14 @@ int main(int argc, char** argv) {
 
   try{
     auto tck_tbl = mk_tck_tbl(10);
-    kafarr::prdcr p(kfk_hst, "cpp_tst_grp" , {"test_topic_1"}, "http://" + kfk_hst + ":8081");
-    p.send2(tck_msg_typ, tck_tbl);
+    kafarr::prdcr p(kfk_hst, "http://" + kfk_hst + ":8081");
+    p.send(tck_msg_typ, tck_tbl);
   }
   catch (const kafarr::err& ke){
     std::cerr << "ERROR caught:>> " << ke.msg() << "\n" ;
+  }   
+  catch (const avro::Exception &e) {
+    std::cerr << std::string("Avro serialization failed: ") + e.what() << std::endl;
   }
   catch(...) {
     std::cerr << "ERROR caught:>> UNKNOWN exception!!!\n" ;
