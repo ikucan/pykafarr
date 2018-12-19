@@ -22,17 +22,18 @@ Functionality is still underdeveloped, however what is there is thought to work 
 <br/><br/>_Valgrind_ reports no memory leaks.
 
 #### Example:
+Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type.
 
 ```python
 import pykafarr
 
-p = pykafarr.listener('kafka_server:9092',
-                      'client_group_id',
-                      ['GBPUSD_PRICE_TOPIC', 'GBPUSD_TRADE_TOPIC'],
-                      'http://schema_reg:8081/')
+lstnr = pykafarr.listener('kafka_server:9092',
+                          'client_group_id',
+                          ['GBPUSD_PRICE_TOPIC', 'GBPUSD_TRADE_TOPIC'],
+                          'http://schema_reg:8081/')
 
 while -2 < -1:
-    message_type, frame = p.poll(num_messages = 1000, max_time = 30000)
+    message_type, frame = lstnr.poll(num_messages = 1000, max_time = 30000)
     # 1. message_type: name of the [fully-qualified avro] message schema
     # 2. frame: pandas data frame, one row per mesage, columns as defined in the message Avro schema
     print(message_type)
