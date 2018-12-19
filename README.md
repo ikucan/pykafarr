@@ -21,7 +21,8 @@ Functionality is still underdeveloped, however what is there is thought to work 
 <br/><br/>So far only tested with Python3 on Ubuntu but no known reason not to try other platforms.
 <br/><br/>_Valgrind_ reports no memory leaks.
 
-#### Example:
+### Example:
+
 Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type.
 
 ```python
@@ -39,6 +40,14 @@ while -2 < -1:
     print(message_type)
     print(frame)
 ```
+To send a Pandas data frame serialized with an avro schema, ensure it has columns matching the avro schema ( 
+<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" title="Pandas\ Columns \supseteq Avro\ Columns" /></a>)
+
+
+To send your pandas frame, ensure it matches the message type as defined in the schema registry. The data frame must be a Then simply send. There is a bit of type conversion taking place. 
+```python
+```
+
 #### A note on type conversion:
 Python numeric types have arbitrary precision. 1 and 111111111111111111111111111111111111 are both of type 'int'. Both Arrow and AVRO prefer fixed precision such as 'int32'. 
 None of this should matter very much upon message receipt, as the move from AVRO via Arrow to Python is intitive. Upon sending howver, the seemingly compatible types, such as the Python int and AVRO int are actually incompatible. What works well is enforcing numeric fixed precision using the numpy functions such as numpy.int32 etc... 
