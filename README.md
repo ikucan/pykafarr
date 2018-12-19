@@ -49,16 +49,35 @@ prod = pykafarr.producer('kfk1:9092 kfk2:9092', 'http://kfk1:8081')
 
 # 1. schema name. this will be looked up from the schema registry
 # 2. the data
-# 3. the topic
+# 3. target topic
 prod.send('avros.broker.Order', new_orders, 'order_topic')
 
 ```
 
 #### A note on type conversion:
-Python numeric types have arbitrary precision. 1 and 111111111111111111111111111111111111 are both of type 'int'. Both Arrow and AVRO prefer fixed precision such as 'int32'. 
-None of this should matter very much upon message receipt, as the move from AVRO via Arrow to Python is intitive. Upon sending howver, the seemingly compatible types, such as the Python int and AVRO int are actually incompatible. What works well is enforcing numeric fixed precision using the numpy functions such as numpy.int32 etc... 
+None of this should matter very much upon message receipt. Type conversion goes from AVRO->ARROW->Python making it simple as Arrow types can be coerced into Python without ambiguity.
+When sending howver it tends to be a bit more tricky. Seemingly compatible types, such as the Python int and AVRO int are actually incompatible so we can either risk bad coercion (int64 to int32) or fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
 
-Once enforced, you will find that type matching works as expected here...
+In order to send a frame with an Avr schema:
+```JSON
+{"subject":"avros.pricing.ig.Tick","version":1,"id":1,"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fi│[info] 11999 :: TICK:>> {"inst": "GBPUSD", "t": 1545248944362, "dt": 38, "bid": 1.25045, "ask": 1.2504901}                                
+elds\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type│[info] =================================
+\":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}(
+```
+
+I can enforce my Pandas data types like this:
+```python
+def gen_ticks(n):
+  instr = ['GBPUSD'] * n
+  tms   = np.array(list(np.int64(time()*1000) for x in range(n)))
+  dt    = np.array(list(np.int32(r.randint(0,150)) for x in range(n)))
+  mid   = np.array(list(np.float32((125000 + r.randint(-100, 100))/100000) for x in range(n)))
+  sprd  = np.array(list(np.float32(r.randint(1, 10)/100000) for x in range(n)))
+  bid   = mid - sprd
+  ask   = mid + sprd
+  return pd.DataFrame({'inst':instr, 't':tms, 'dt':dt, 'bid':bid, 'ask':ask})
+```
+(well, as appropriate for your data source...).
 
 #### Dependencies:
 There are a few:
@@ -103,7 +122,6 @@ Runtime image can be used as a basis for creating python applications whcih use 
 Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
 
 #### Not [yet] supported
-- ~~Message sending~~ first cut implemented on a branch. Efficient and works well. Need to cleanup but will merge over the next few days.
 - Keyed messages
 - All Avro primitive types. Only bool, int, long, float, double and string currentlly supported.
 - Complex schemas. Schemas where children are not primitive types.
@@ -115,19 +133,6 @@ Those will be added some time in the near future, the first priority has been to
 - More testing needs to be done around reading from multiple topics and multiple partitions.
 - Come up with a configurable model of hos much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
 - OS. This has only been tested on Ubuntu 18.xx. There is no reason any other Linux versions and MacOS should be an issue. Windows howver might be a different story.
-- ~~The polling timeout is currentlly not working correctly. The logic needs to be clearer. The issue is slightly complicated by the fact that there is also the 'client catcup time' which presumably should not be included as polling time or perhaps needs to be mandated separtely (andother parameter?). Suggestions welcome but the next change will be to this:~~
-  This has been fixed. ~~Still testing but almost ready to be checked in.~~ The algorithm is as was suggested initially.
-
-```
-  poll(n_msgs, timeout):
-    wait until kafka client caught up
-    set message_count, polling_time to 0
-    while message_count < n_msgs && polling_time < timeout
-       receive and process a message
-       update message_count, polling_time
-       
-```
-- ~~More testing needs to be done around messages with mixed schemas.~~ This has been done. Works as expected. No messages are lost upon schema change (a poped message with a new schema is pushed back and succesfully popped on next _poll_).
 
 
 #### References
