@@ -82,7 +82,7 @@ Runtime image can be used as a basis for creating python applications whcih use 
 Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
 
 #### Not [yet] supported
-- Message sending
+- ~~Message sending~~ first cut implemented on a branch. Efficient and works well. Need to cleanup but will merge over the next few days.
 - Keyed messages
 - All Avro primitive types. Only bool, int, long, float, double and string currentlly supported.
 - Complex schemas. Schemas where children are not primitive types.
