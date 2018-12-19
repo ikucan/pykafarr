@@ -1,4 +1,4 @@
-import rel_pth
+#import rel_pth
 
 import pykafarr
 import sys

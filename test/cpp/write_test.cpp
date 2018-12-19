@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-std::shared_ptr< arrow::Table > mk_tck_tbl(const int n) {
+std::shared_ptr< arrow::Table > mk_tck_tbl(const int num_rows) {
   const std::string msg_typ = "avros.pricing.ig.Tick";
   
   std::shared_ptr<Serdes::Conf>   srds_conf = kafarr::kfk_hlpr::mk_srds_conf("kfk:8081");
@@ -13,7 +13,7 @@ std::shared_ptr< arrow::Table > mk_tck_tbl(const int n) {
   std::string err;
   Serdes::Schema* schm = Serdes::Schema::get(srds_hndl.get(), msg_typ, err);
   std::tuple<std::string, std::shared_ptr<arrow::Schema>> res = kafarr::avr_hlpr::mk_arrw_schm(schm);
-  std::cerr << "arrow schema name:: " << std::get<0>(res) << std::endl;
+  //std::cerr << "arrow schema name:: " << std::get<0>(res) << std::endl;
   if(msg_typ != std::get<0>(res)){
     std::stringstream ss ;
     ss << "ERROR:: message type mismatch. Expected: " << msg_typ << " but received: " << std::get<0>(res);
@@ -31,8 +31,8 @@ std::shared_ptr< arrow::Table > mk_tck_tbl(const int n) {
   auto pool = arrow::default_memory_pool();
   arrow::RecordBatchBuilder::Make(schm2, pool, &bldr);
 
-  std::cerr << bldr->num_fields() << std::endl;
-  for(auto i = 0; i < 100; ++i){
+  //std::cerr << bldr->num_fields() << std::endl;
+  for(auto i = 0; i < num_rows; ++i){
     for (auto j = 0; j < bldr->num_fields(); ++j) {
       auto fld = bldr->GetField(j);
       //std::cerr << "fld(" << i<< "): " << fld->type()->name() << std::endl;
@@ -65,15 +65,22 @@ int main(int argc, char** argv) {
   gethostname(hostname, HOST_NAME_MAX);
   std::string kfk_hst = hostname;
   if(argc == 2) kfk_hst = argv[1];
+  const std::string kfk_tpc = "test_topic_1";
 
   const std::string tck_msg_typ = "avros.pricing.ig.Tick";
 
   std::cerr << "kafka host: " << kfk_hst << std::endl;  
 
   try{
-    auto tck_tbl = mk_tck_tbl(10);
     kafarr::prdcr p(kfk_hst, "http://" + kfk_hst + ":8081");
-    p.send(tck_msg_typ, tck_tbl);
+
+    //auto tck_tbl = mk_tck_tbl(10);
+    //p.send(tck_msg_typ, mk_tck_tbl(10),      kfk_tpc);
+    p.send(tck_msg_typ, mk_tck_tbl(100),     kfk_tpc);
+    //p.send(tck_msg_typ, mk_tck_tbl(1000),    kfk_tpc);
+    //p.send(tck_msg_typ, mk_tck_tbl(10000),   kfk_tpc);
+    //p.send(tck_msg_typ, mk_tck_tbl(100000),  kfk_tpc);
+    //p.send(tck_msg_typ, mk_tck_tbl(1000000), kfk_tpc);
   }
   catch (const kafarr::err& ke){
     std::cerr << "ERROR caught:>> " << ke.msg() << "\n" ;

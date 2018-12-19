@@ -30,16 +30,16 @@ print('------------------')
 #lst     = [str(i*10 + 2).encode('utf-8') for i in range(1, 4)]
 srvrs   = 'kfk:9092'.encode('utf-8')
 grp_id  = ('test_grp_' + str(r.randint(10000, 20000))).encode('utf-8')
-#tpcs    = ['CS.D.GBPUSD.MINI.IP_TOPIC'.encode('utf-8')]
 tpcs    = ['test_topic_2'.encode('utf-8')]
 reg_url = 'http://kfk:8081'.encode('utf-8')
 
-p = pykafarr.producer(srvrs, grp_id, tpcs, reg_url)
+p = pykafarr.producer(srvrs, reg_url)
+
 data = gen_ticks(20)
 
 
 try:
-  p.send(cstr('avros.pricing.ig.Tick'), data)
+  p.send(cstr('avros.pricing.ig.Tick'), data, cstr('test_topic_1'))
 except RuntimeError: 
   type, value, traceback = sys.exc_info()
   print("RuntimeError exception caught in python")

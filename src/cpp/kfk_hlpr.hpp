@@ -18,30 +18,52 @@ namespace kafarr {
         
     /**
      * create a kafka consumer handle
-     * TODO:>> add exception for failed creation
      */
     static std::unique_ptr<RdKafka::KafkaConsumer> mk_kfk_cnsmr(const std::string& grp, const std::string& brkr_lst) {
-      std::string _err;
+      std::string err;
       
       const std::unique_ptr<RdKafka::Conf> kconf(RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL));
       
-      if (kconf->set("metadata.broker.list", brkr_lst, _err) != RdKafka::Conf::ConfResult::CONF_OK)
-	throw kafarr::err("failed to set broker list property . ", _err);
+      if (kconf->set("metadata.broker.list", brkr_lst, err) != RdKafka::Conf::ConfResult::CONF_OK)
+	throw kafarr::err("failed to set broker list property . ", err);
       
-      if (kconf->set("group.id", grp, _err) != RdKafka::Conf::ConfResult::CONF_OK)
-	throw kafarr::err("failed to set group id property . ", _err);
+      if (kconf->set("group.id", grp, err) != RdKafka::Conf::ConfResult::CONF_OK)
+	throw kafarr::err("failed to set group id property . ", err);
       
-      if (kconf->set("enable.auto.commit", "false", _err) != RdKafka::Conf::ConfResult::CONF_OK)
-	throw kafarr::err("failed to set auto commit property . ", _err);
+      if (kconf->set("enable.auto.commit", "false", err) != RdKafka::Conf::ConfResult::CONF_OK)
+	throw kafarr::err("failed to set auto commit property . ", err);
       
       
       /** 
        * create kafka consumer
        */ 
-      std::unique_ptr<RdKafka::KafkaConsumer> cnsmr(RdKafka::KafkaConsumer::create(kconf.get(), _err));
-      if (!cnsmr) throw kafarr::err("failed to crate kafka consumer. ", _err);
+      std::unique_ptr<RdKafka::KafkaConsumer> cnsmr(RdKafka::KafkaConsumer::create(kconf.get(), err));
+      if (!cnsmr) throw kafarr::err("failed to crate kafka consumer. ", err);
       
       return cnsmr;
+    }
+
+    /**
+     * create a kafka consumer handle
+     */
+    static std::unique_ptr<RdKafka::Producer> mk_kfk_prdcr(const std::string& srvrs) {
+      std::string err;
+
+      /* Create Kafka producer */
+      const std::unique_ptr<RdKafka::Conf> kconf(RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL));
+      
+      if (kconf->set("bootstrap.servers", srvrs, err) != RdKafka::Conf::ConfResult::CONF_OK)
+	throw kafarr::err("failed to set broker list property . ", err); 
+      if (kconf->set("produce.offset.report", "true", err) != RdKafka::Conf::ConfResult::CONF_OK)
+	throw kafarr::err("failed to set produce.offset.report property.", err);
+     
+      std::unique_ptr<RdKafka::Producer> producer(RdKafka::Producer::create(kconf.get(), err));
+      if (!producer){
+	std::cerr << "failed to create kafka producer: " << err << std::endl;
+	throw kafarr::err("failed to create kafka producer: ", err);
+      }
+
+      return producer;
     }
 
     /**

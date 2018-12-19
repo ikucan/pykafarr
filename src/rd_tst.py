@@ -1,3 +1,5 @@
+#import rel_pth
+
 import pykafarr
 import sys
 import random
@@ -14,12 +16,6 @@ tpcs    = ['test_topic_1'.encode('utf-8')]
 reg_url = 'http://kfk:8081'.encode('utf-8')
 
 p = pykafarr.listener(srvrs, grp_id, tpcs, reg_url)
-
-#try:
-#  p.ex_tst(cstr("xxxxxxxxxxxxxxxxx"))
-#except RuntimeError: 
-#  type, value, traceback = sys.exc_info()
-#  print("RuntimeError exception caught in python")
 
 for i in range(0, 1000):
     print ('------------------------------')

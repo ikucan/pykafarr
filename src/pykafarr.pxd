@@ -14,5 +14,5 @@ cdef extern from "lstnr.hpp" namespace "kafarr":
 
 cdef extern from "prdcr.hpp" namespace "kafarr":
   cdef cppclass prdcr:
-    prdcr(string&, string&, vector[string]&, string&) except +
-    void send(string&, shared_ptr[CTable]) except +
+    prdcr(string&, string&) except +
+    void send(string&, shared_ptr[CTable], string&, int) except +

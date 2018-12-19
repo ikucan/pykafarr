@@ -13,7 +13,8 @@
 namespace kafarr {
 
   /**
-   * an arrow table decoder
+   * an arrow table decoder.
+   * equivalent to avro::jsonDecoder except does not inherit from avro::Decoder
    */
   class arr_tbl_dcdr {
   public:
@@ -106,11 +107,20 @@ namespace kafarr {
       switch (avr_typ) {
       case avro::Type::AVRO_INT    :
 	switch(col->type()->id()){
+	  //case arrow::Type::type::INT64 :
+	  //col_dtm.value<int32_t>() = ((arrow::NumericArray<arrow::Int64Type>*)(col->data()->chunk(0).get()))->Value(row_idx);
+	  //break;
 	case arrow::Type::type::INT32 :
 	  col_dtm.value<int32_t>() = ((arrow::NumericArray<arrow::Int32Type>*)(col->data()->chunk(0).get()))->Value(row_idx);
 	  break;
+	case arrow::Type::type::INT16 :
+	  col_dtm.value<int32_t>() = ((arrow::NumericArray<arrow::Int16Type>*)(col->data()->chunk(0).get()))->Value(row_idx);
+	  break;
+	case arrow::Type::type::INT8 :
+	  col_dtm.value<int32_t>() = ((arrow::NumericArray<arrow::Int8Type>*)(col->data()->chunk(0).get()))->Value(row_idx);
+	  break;
 	default:
-	  throw kafarr::err("ERROR. inompatible types. Cannot convert to AVRO '" + avro::toString(avr_typ) + "' from ARROW '" +  col->type()->name() + "'");
+	  throw kafarr::err("ERROR. inompatible types. Cannot convert field " + col->name() + " to AVRO '" + avro::toString(avr_typ) + "' from ARROW '" +  col->type()->name() + "'");
 	}
 	break;
       case avro::Type::AVRO_LONG   :
@@ -144,6 +154,9 @@ namespace kafarr {
 	switch(col->type()->id()){
 	case arrow::Type::type::STRING : 
 	  col_dtm.value<std::string>() = ((arrow::StringArray*)(col->data()->chunk(0).get()))->GetString(row_idx);
+	  break;
+	case arrow::Type::type::BINARY : 
+	  col_dtm.value<std::string>() = ((arrow::BinaryArray*)(col->data()->chunk(0).get()))->GetString(row_idx);
 	  break;
 	default:
 	  throw kafarr::err("ERROR. inompatible types. Cannot convert to AVRO '" + avro::toString(avr_typ) + "' from ARROW '" +  col->type()->name() + "'");
