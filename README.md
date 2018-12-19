@@ -23,7 +23,7 @@ Functionality is still underdeveloped, however what is there is thought to work 
 
 ### Example:
 
-Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type.
+Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type. This is all fairly intuitive.
 
 ```python
 import pykafarr
@@ -40,12 +40,18 @@ while -2 < -1:
     print(message_type)
     print(frame)
 ```
-To send a Pandas data frame serialized with an avro schema, ensure it has columns matching the avro schema ( 
-<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" title="Pandas\ Columns \supseteq Avro\ Columns" /></a>)
-
-
-To send your pandas frame, ensure it matches the message type as defined in the schema registry. The data frame must be a Then simply send. There is a bit of type conversion taking place. 
+To send a Pandas data frame serialized with an avro schema, ensure it has all the columns required by the avro schema (<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" title="Pandas\ Columns \supseteq Avro\ Columns" /></a>). All the names in the Avro schema for the message must be present in the Pandas data frame. All the types must be coerce-able. More on that below.
 ```python
+# get the pandas data frame
+new_orders = generate_orders()
+
+prod = pykafarr.producer('kfk1:9092 kfk2:9092', 'http://kfk1:8081')
+
+# 1. schema name. this will be looked up from the schema registry
+# 2. the data
+# 3. the topic
+prod.send('avros.broker.Order', new_orders, 'order_topic')
+
 ```
 
 #### A note on type conversion:
