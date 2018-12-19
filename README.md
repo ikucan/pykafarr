@@ -38,6 +38,11 @@ while -2 < -1:
     print(message_type)
     print(frame)
 ```
+#### A note on type conversion:
+Python numeric types have arbitrary precision. 1 and 111111111111111111111111111111111111 are both of type 'int'. Both Arrow and AVRO prefer fixed precision such as 'int32'. 
+None of this should matter very much upon message receipt, as the move from AVRO via Arrow to Python is intitive. Upon sending howver, the seemingly compatible types, such as the Python int and AVRO int are actually incompatible. What works well is enforcing numeric fixed precision using the numpy functions such as numpy.int32 etc... 
+
+Once enforced, you will find that type matching works as expected here...
 
 #### Dependencies:
 There are a few:
