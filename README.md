@@ -81,7 +81,7 @@ def gen_ticks(n):
 ```
 (well, as appropriate for your data source...).
 
-At some point I will incorporate a setting to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (```int64``` by the time it is in Arrow) to serialise to the Avro ```int``` (```int32```) field.
+At some point there will be an option to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (```int64``` by the time it is in Arrow) to serialise to the Avro ```int``` (```int32```) field.
 
 ### Getting and installing:
 #### Dependencies:
