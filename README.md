@@ -13,7 +13,9 @@ arrive the _poll(MaxInt, MaxInt)_ will return early with _m_ rows
 
 Producing is trivial. You simply set up your data frame where each row is assuemd to be a message to be sent on Kafka. The frame is sent accompanied by the desired message type. If the data frame is a superset of the message type it will be sent, provided equally named fields are type-compatible.
 
-The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/") structures to interface with Kafka.
+In both cases advantages are simplicity and performance. The boilerplate mechanics of deserialisation and serialisation from AVRO to Pandas and the reverse are hidden in the library. As it is implemented in C++ it has better performance and scalability characteristcs when compared to Python.
+
+The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html ") structures to interface with Kafka.
 
 #### Performance:
 While no time has been spent on optimisations Pykafarr is already quite performant. It can read, parse and package into Pandas 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests on an underwhelming old laptop in a single-host setup. Reading from a remote kafka topic would change the numbers depending on your network latency.
