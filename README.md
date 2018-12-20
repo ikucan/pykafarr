@@ -77,6 +77,7 @@ def gen_ticks(n):
 ```
 (well, as appropriate for your data source...).
 
+### Getting and installing:
 #### Dependencies:
 There are a few:
 - apache rdkafka (c & c++)
@@ -117,7 +118,7 @@ Provides a complete development environment with all dependencies built and inst
 Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers containing apps could simply use the pykafarr image as the base.
 
 #### To Use
-Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
+Look at the python and c++ examples in the _test_ directory.
 
 #### Not [yet] supported
 - Keyed messages
