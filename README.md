@@ -60,7 +60,7 @@ When sending howver it tends to be a bit more tricky. Seemingly compatible types
 
 In order to send a frame with an Avr schema:
 ```JSON
-{"subject":"avros.pricing.ig.Tick","version":1,"id":1,"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fi│[info] 11999 :: TICK:>> {"inst": "GBPUSD", "t": 1545248944362, "dt": 38, "bid": 1.25045, "ask": 1.2504901}                                
+{"subject":"avros.pricing.Tick","version":1,"id":1,"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fi│[info] 11999 :: TICK:>> {"inst": "GBPUSD", "t": 1545248944362, "dt": 38, "bid": 1.25045, "ask": 1.2504901}                                
 elds\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type│[info] =================================
 \":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}(
 ```
