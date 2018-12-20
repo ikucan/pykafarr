@@ -13,7 +13,7 @@ arrive the _poll(MaxInt, MaxInt)_ will return early with _m_ rows
 
 Producing is trivial. You simply set up your data frame where each row is assuemd to be a message to be sent on Kafka. The frame is sent accompanied by the desired message type. If the data frame is a superset of the message type it will be sent, provided equally named fields are type-compatible.
 
-In both cases advantages are simplicity and performance. The boilerplate mechanics of deserialisation and serialisation from AVRO to Pandas and the reverse are hidden in the library. As it is implemented in C++ it has better performance and scalability characteristcs when compared to Python.
+In both cases advantages are simplicity and performance. The boilerplate mechanics of deserialisation and serialisation from AVRO to Pandas and the reverse are hidden in the library. Because it is implemented in C++ it has better performance and scalability characteristcs when compared to Python.
 
 The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html ") structures to interface with Kafka.
 
