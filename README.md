@@ -56,7 +56,7 @@ prod.send('avros.broker.Order', new_orders, 'order_topic')
 
 #### A note on type conversion:
 None of this should matter very much upon message receipt. Type conversion goes from AVRO->ARROW->Python making it simple as Arrow types can be coerced into Python without ambiguity.
-When sending howver it tends to be a bit more tricky. Seemingly compatible types, such as the Python int and AVRO int are actually incompatible so we can either risk bad coercion (int64 to int32) or fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
+However when sending, this is trickier. Seemingly compatible types, such as the Python int and AVRO int are actually incompatible so in order to avoid risky coercion (int64 to int32) we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
 
 In order to send a frame with an Avr schema:
 ```JSON
@@ -76,6 +76,8 @@ def gen_ticks(n):
   return pd.DataFrame({'inst':instr, 't':tms, 'dt':dt, 'bid':bid, 'ask':ask})
 ```
 (well, as appropriate for your data source...).
+
+At some point I will incorporate a setting to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (int64 by the time it is in Arrow) to serialise to the Avro ```int``` (int32) field.
 
 ### Getting and installing:
 #### Dependencies:
