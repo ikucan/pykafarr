@@ -21,29 +21,65 @@ Functionality is still underdeveloped, however what is there is thought to work 
 <br/><br/>So far only tested with Python3 on Ubuntu but no known reason not to try other platforms.
 <br/><br/>_Valgrind_ reports no memory leaks.
 
-#### Example:
+### Example:
+
+Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type. This is all fairly intuitive.
 
 ```python
 import pykafarr
 
-p = pykafarr.listener('kafka_server:9092',
-                      'client_group_id',
-                      ['GBPUSD_PRICE_TOPIC', 'GBPUSD_TRADE_TOPIC'],
-                      'http://schema_reg:8081/')
+lstnr = pykafarr.listener('kafka_server:9092',
+                          'client_group_id',
+                          ['GBPUSD_PRICE_TOPIC', 'GBPUSD_TRADE_TOPIC'],
+                          'http://schema_reg:8081/')
 
 while -2 < -1:
-    message_type, frame = p.poll(num_messages = 1000, max_time = 30000)
+    message_type, frame = lstnr.poll(num_messages = 1000, max_time = 30000)
     # 1. message_type: name of the [fully-qualified avro] message schema
     # 2. frame: pandas data frame, one row per mesage, columns as defined in the message Avro schema
     print(message_type)
     print(frame)
 ```
+To send a Pandas data frame serialized with an avro schema, ensure it has all the columns required by the avro schema (<a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;Pandas\&space;Columns&space;\supseteq&space;Avro\&space;Columns" title="Pandas\ Columns \supseteq Avro\ Columns" /></a>). All the names in the Avro schema for the message must be present in the Pandas data frame. All the types must be coerce-able. More on that below.
+```python
+# get the pandas data frame
+new_orders = generate_orders()
+
+prod = pykafarr.producer('kfk1:9092 kfk2:9092', 'http://kfk1:8081')
+
+# 1. schema name. this will be looked up from the schema registry
+# 2. the data
+# 3. target topic
+prod.send('avros.broker.Order', new_orders, 'order_topic')
+
+```
+
 #### A note on type conversion:
-Python numeric types have arbitrary precision. 1 and 111111111111111111111111111111111111 are both of type 'int'. Both Arrow and AVRO prefer fixed precision such as 'int32'. 
-None of this should matter very much upon message receipt, as the move from AVRO via Arrow to Python is intitive. Upon sending howver, the seemingly compatible types, such as the Python int and AVRO int are actually incompatible. What works well is enforcing numeric fixed precision using the numpy functions such as numpy.int32 etc... 
+None of this should matter very much upon message receipt. Type conversion goes from AVRO->ARROW->Python making it simple as Arrow types can be coerced into Python without ambiguity.
+However when sending, this is trickier. Seemingly compatible types, such as the Python int and AVRO int are actually incompatible so in order to avoid risky coercion (```int64``` to ```int32```) we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
 
-Once enforced, you will find that type matching works as expected here...
+In order to send a frame with an Avr schema:
+```JSON
+{"subject":"avros.pricing.Tick","version":1,"id":1,"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fields\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type\":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}
+```
 
+I can enforce my Pandas data types like this:
+```python
+def gen_ticks(n):
+  instr = ['GBPUSD'] * n
+  tms   = np.array(list(np.int64(time()*1000) for x in range(n)))
+  dt    = np.array(list(np.int32(r.randint(0,150)) for x in range(n)))
+  mid   = np.array(list(np.float32((125000 + r.randint(-100, 100))/100000) for x in range(n)))
+  sprd  = np.array(list(np.float32(r.randint(1, 10)/100000) for x in range(n)))
+  bid   = mid - sprd
+  ask   = mid + sprd
+  return pd.DataFrame({'inst':instr, 't':tms, 'dt':dt, 'bid':bid, 'ask':ask})
+```
+(well, as appropriate for your data source...).
+
+At some point I will incorporate a setting to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (```int64``` by the time it is in Arrow) to serialise to the Avro ```int``` (```int32```) field.
+
+### Getting and installing:
 #### Dependencies:
 There are a few:
 - apache rdkafka (c & c++)
@@ -84,10 +120,9 @@ Provides a complete development environment with all dependencies built and inst
 Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers containing apps could simply use the pykafarr image as the base.
 
 #### To Use
-Look at the `tst.py` file in `src/py` or `tst2.cpp` in `src/cpp`
+Look at the python and c++ examples in the _test_ directory.
 
 #### Not [yet] supported
-- ~~Message sending~~ first cut implemented on a branch. Efficient and works well. Need to cleanup but will merge over the next few days.
 - Keyed messages
 - All Avro primitive types. Only bool, int, long, float, double and string currentlly supported.
 - Complex schemas. Schemas where children are not primitive types.
@@ -97,21 +132,8 @@ Those will be added some time in the near future, the first priority has been to
 
 #### Issues/Limitations
 - More testing needs to be done around reading from multiple topics and multiple partitions.
-- Come up with a configurable model of hos much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
+- Come up with a configurable model of how much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
 - OS. This has only been tested on Ubuntu 18.xx. There is no reason any other Linux versions and MacOS should be an issue. Windows howver might be a different story.
-- ~~The polling timeout is currentlly not working correctly. The logic needs to be clearer. The issue is slightly complicated by the fact that there is also the 'client catcup time' which presumably should not be included as polling time or perhaps needs to be mandated separtely (andother parameter?). Suggestions welcome but the next change will be to this:~~
-  This has been fixed. ~~Still testing but almost ready to be checked in.~~ The algorithm is as was suggested initially.
-
-```
-  poll(n_msgs, timeout):
-    wait until kafka client caught up
-    set message_count, polling_time to 0
-    while message_count < n_msgs && polling_time < timeout
-       receive and process a message
-       update message_count, polling_time
-       
-```
-- ~~More testing needs to be done around messages with mixed schemas.~~ This has been done. Works as expected. No messages are lost upon schema change (a poped message with a new schema is pushed back and succesfully popped on next _poll_).
 
 
 #### References
