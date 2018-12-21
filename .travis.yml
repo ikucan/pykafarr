@@ -5,4 +5,4 @@ install:
 script:
   - pwd
   - ls
-  - build.sh
+  - ./build.sh
