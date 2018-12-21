@@ -1,11 +1,11 @@
 language: python
-
+sudo: required
 
 before_install:
     - |
       if [[ $PYTHON && "$TRAVIS_OS_NAME" == "linux" ]]; then
-        apt-get install librdkafka1
-        apt-get install librdkafka-dev
+        sudo apt-get install librdkafka1
+        sudo apt-get install librdkafka-dev
         
       fi
 
@@ -18,7 +18,7 @@ script:
   - ls
   - type python
   - ./make.sh
-  - echo "================= ${TRAVIS_OS_NAME} ==============="
+  - ls /usr/include/librdkafka/
 
 matrix:
     include:
