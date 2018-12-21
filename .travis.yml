@@ -6,4 +6,5 @@ script:
   - pwd
   - cd src
   - ls
+  - type python
   - ./make.sh
