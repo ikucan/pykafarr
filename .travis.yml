@@ -4,5 +4,6 @@ install:
 
 script:
   - pwd
+  - cd src
   - ls
   - ./build.sh
