@@ -6,22 +6,23 @@ before_install:
 #    - sudo apt-get install -yV librdkafka1
 #    - sudo apt-get install -yV 'librdkafka++1'
 #    - sudo apt-get install -yV librdkafka-dev
-    - sudo apt-get install -yV wget
-    - wget http://de.archive.ubuntu.com/ubuntu/pool/universe/libr/librdkafka/librdkafka1_0.11.6-1.1_amd64.deb
-    - ls -Fila
-    - wget http://de.archive.ubuntu.com/ubuntu/pool/universe/libr/librdkafka/librdkafka++1_0.11.6-1.1_amd64.deb
-    - ls -Fila
-    - wget http://de.archive.ubuntu.com/ubuntu/pool/universe/libr/librdkafka/librdkafka-dev_0.11.6-1.1_amd64.deb
-    - ls -Fila
-    - sudo dpkg -i librdkafka1_0.11.6-1.1_amd64.deb
-    - sudo dpkg -i librdkafka++1_0.11.6-1.1_amd64.deb
-    - sudo dpkg -i librdkafka-dev_0.11.6-1.1_amd64.deb
-    - dpkg-query -L librdkafka1
-    - dpkg-query -L librdkafka++1
-    - dpkg-query -L librdkafka-dev
-    - rm librdkafka1_0.11.6-1.1_amd64.deb
-    - rm librdkafka++1_0.11.6-1.1_amd64.deb
-    - rm librdkafka-dev_0.11.6-1.1_amd64.deb
+
+#    - sudo apt-get install -yV wget
+#    - wget http://de.archive.ubuntu.com/ubuntu/pool/universe/libr/librdkafka/librdkafka1_0.11.6-1.1_amd64.deb
+#    - ls -Fila
+#    - wget http://de.archive.ubuntu.com/ubuntu/pool/universe/libr/librdkafka/librdkafka++1_0.11.6-1.1_amd64.deb
+#    - ls -Fila
+#    - wget http://de.archive.ubuntu.com/ubuntu/pool/universe/libr/librdkafka/librdkafka-dev_0.11.6-1.1_amd64.deb
+#    - ls -Fila
+#    - sudo dpkg -i librdkafka1_0.11.6-1.1_amd64.deb
+#   - sudo dpkg -i librdkafka++1_0.11.6-1.1_amd64.deb
+#   - sudo dpkg -i librdkafka-dev_0.11.6-1.1_amd64.deb
+#  - dpkg-query -L librdkafka1
+#    - dpkg-query -L librdkafka++1
+#    - dpkg-query -L librdkafka-dev
+#    - rm librdkafka1_0.11.6-1.1_amd64.deb
+#    - rm librdkafka++1_0.11.6-1.1_amd64.deb
+#    - rm librdkafka-dev_0.11.6-1.1_amd64.deb
     - ./ubuntu-deps.sh
 
 install:
