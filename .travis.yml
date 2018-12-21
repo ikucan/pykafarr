@@ -23,7 +23,7 @@ before_install:
 #    - rm librdkafka1_0.11.6-1.1_amd64.deb
 #    - rm librdkafka++1_0.11.6-1.1_amd64.deb
 #    - rm librdkafka-dev_0.11.6-1.1_amd64.deb
-    - ./ubuntu-deps.sh
+    - ./.ubuntu-deps.sh
 
 install:
   - pip install -r .requirements.txt
