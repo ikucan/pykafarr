@@ -2,11 +2,8 @@ language: python
 sudo: required
 
 before_install:
-    - |
-      if [[ $PYTHON && "$TRAVIS_OS_NAME" == "linux" ]]; then
-        sudo apt-get install -y librdkafka1;
-        sudo apt-get install -y librdkafka-dev;
-      fi;
+    - sudo apt-get install -y librdkafka1
+    - sudo apt-get install -y librdkafka-dev
 
 install:
   - pip install -r .requirements.txt
