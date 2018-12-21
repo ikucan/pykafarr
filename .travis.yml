@@ -17,6 +17,7 @@ script:
   - ls
   - type python
   - ./make.sh
+  - ls -d /usr/include/lib*
   - ls /usr/include/librdkafka/
 
 matrix:
