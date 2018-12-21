@@ -42,9 +42,7 @@ namespace kafarr {
     prdcr() = delete;
     prdcr(const std::string& srvr_lst,
 	  const std::string& reg_url) : kfk_bse(reg_url), _prdcr(kfk_hlpr::mk_kfk_prdcr(srvr_lst))
-    {
-      std::cerr << "prdcr::prdcr(....)" << std::endl;
-    }
+    {}
     
   public:
     /**
@@ -55,7 +53,6 @@ namespace kafarr {
   public:
     void send(const std::string& msg_typ, std::shared_ptr<arrow::Table> tbl, const std::string topic, const int partition = RdKafka::Topic::PARTITION_UA) {
       try{
-	std::cerr << "send(...) - START" << std::endl;
 	auto t0 = now_ms();
 	// general purpose error message string used in many calls below
 	std::string err;
@@ -72,13 +69,11 @@ namespace kafarr {
 	  throw kafarr::err(ss.str());
 	}
 	
-	std::cerr << "send(...) - 2. got schema" << std::endl;
 	/**
 	 * convert the ARROW table to a list of AVRO datums
 	 */
 	std::vector<std::shared_ptr<avro::GenericDatum> > avro_data = arr_tbl_dcdr::arr2avr(tbl, schm);
 	
-	std::cerr << "send(...) - 3. generated data" << std::endl;
 	/**
 	 * create the topic object
 	 */

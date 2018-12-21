@@ -29,7 +29,7 @@ module = Extension(
 
 setup(
     name             = 'pykafarr', 
-    version          = '0.0.5.7',
+    version          = '0.6.0.3',
     author           = 'iztok kucan',
     author_email     = 'iztok.kucan@gmail.com',
     url              = 'https://github.com/ikucan/pykafarr',
@@ -37,8 +37,8 @@ setup(
     long_description_content_type ="text/markdown",
     ext_modules      = [module],
     python_requires  = '>=3.5.',
-    install_requires = ['numpy', 'pyarrow'],
-    setup_requires   = ['numpy', 'pyarrow'],
+    install_requires = ['numpy', 'pyarrow', 'pandas'],
+    setup_requires   = ['numpy', 'pyarrow', 'pandas'],
     #extras_require   = ['numpy'],
     classifiers      = [
         "Programming Language :: Python :: 3",
