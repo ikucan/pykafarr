@@ -8,3 +8,9 @@ script:
   - ls
   - type python
   - ./make.sh
+
+
+matrix:
+    include:
+        - dist: xenial
+          python: 3.7
