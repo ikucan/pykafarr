@@ -19,6 +19,8 @@ script:
   - ./make.sh
   - ls -d /usr/include/lib*
   - ls /usr/include/librdkafka/
+  - ls -d /usr/local/include/lib*
+  - ls /usr/local/include/librdkafka/
 
 matrix:
     include:
