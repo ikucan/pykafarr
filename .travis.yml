@@ -5,6 +5,9 @@ before_install:
     - sudo apt-get install -yV librdkafka1
     - sudo apt-get install -yV librdkafka++1
     - sudo apt-get install -yV librdkafka-dev
+    - sudo apt-file librdkafka1
+    - sudo apt-file librdkafka++1
+    - sudo apt-file librdkafka-dev
 
 install:
   - pip install -r .requirements.txt
