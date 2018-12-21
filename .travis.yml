@@ -2,9 +2,9 @@ language: python
 sudo: required
 
 before_install:
-    - sudo apt-get install -y librdkafka1
-    - sudo apt-get install -y librdkafka++1
-    - sudo apt-get install -y librdkafka-dev
+    - sudo apt-get install -yV librdkafka1
+    - sudo apt-get install -yV librdkafka++1
+    - sudo apt-get install -yV librdkafka-dev
 
 install:
   - pip install -r .requirements.txt
@@ -17,8 +17,6 @@ script:
   - ./make.sh
   - ls -d /usr/include/lib*
   - ls /usr/include/librdkafka/
-  - ls -d /usr/local/include/lib*
-  - ls /usr/local/include/librdkafka/
 
 matrix:
     include:
