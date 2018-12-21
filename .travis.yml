@@ -2,9 +2,17 @@ language: python
 sudo: required
 
 before_install:
-    - sudo apt-get install -yV librdkafka1
-    - sudo apt-get install -yV 'librdkafka++1'
-    - sudo apt-get install -yV librdkafka-dev
+#    ideally do this, but travis is only up to xenial (16.xx)
+#    - sudo apt-get install -yV librdkafka1
+#    - sudo apt-get install -yV 'librdkafka++1'
+#    - sudo apt-get install -yV librdkafka-dev
+    - sudo apt-get install -yV wget
+    - wget http://mirrors.kernel.org/ubuntu/pool/universe/libr/librdkafka/librdkafka1_0.11.6-1.1_amd64.deb
+    - wget http://mirrors.kernel.org/ubuntu/pool/universe/libr/librdkafka/librdkafka++1_0.11.6-1.1_amd64.deb
+    - wget http://mirrors.kernel.org/ubuntu/pool/universe/libr/librdkafka/librdkafka-dev_0.11.6-1.1_amd64.deb
+    - dpkg -i librdkafka1_0.11.6-1.1_amd64.deb
+    - dpkg -i librdkafka++1_0.11.6-1.1_amd64.deb
+    - dpkg -i librdkafka-dev_0.11.6-1.1_amd64.deb
     - dpkg-query -L librdkafka1
     - dpkg-query -L librdkafka++1
     - dpkg-query -L librdkafka-dev
@@ -23,5 +31,5 @@ script:
 
 matrix:
     include:
-        - dist: disco
+        - dist: xenail
           python: 3.7
