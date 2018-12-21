@@ -1,4 +1,8 @@
 language: python
 
+install:
+
 script:
+  - pwd
+  - ls
   - build.sh
