@@ -1,3 +1,5 @@
+https://travis-ci.org/ikucan/pykafarr.svg?branch=master
+
 ### Pykafarr is a library for efficientlly streaming Avro-typed Kafka messages in Python
 
 Pykafarr provides a fast, batching Kafka client. Messages are read on Kafka and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client. Several messages can be returned as a result of a single _"poll"_ to Kafka. As a result the overhead costs of the Python VM are minimised. Data is also returned in a Python-friendly format, arguably one of the preferred formats.
