@@ -1,4 +1,4 @@
-https://travis-ci.org/ikucan/pykafarr.svg?branch=master
+[![Build Status](https://travis-ci.org/ikucan/pykafarr.svg?branch=master)](https://travis-ci.org/ikucan/pykafarr)
 
 ### Pykafarr is a library for efficientlly streaming Avro-typed Kafka messages in Python
 
