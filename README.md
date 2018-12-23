@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/ikucan/pykafarr.svg?branch=master)](https://travis-ci.org/ikucan/pykafarr)
+
 ### Pykafarr is a library for efficientlly streaming Avro-typed Kafka messages in Python
 
 Pykafarr provides a fast, batching Kafka client. Messages are read on Kafka and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client. Several messages can be returned as a result of a single _"poll"_ to Kafka. As a result the overhead costs of the Python VM are minimised. Data is also returned in a Python-friendly format, arguably one of the preferred formats.
@@ -59,8 +61,9 @@ prod.send('avros.broker.Order', new_orders, 'order_topic')
 ```
 
 #### A note on type conversion:
-None of this should matter very much upon message receipt. Type conversion goes from AVRO->ARROW->Python making it simple as Arrow types can be coerced into Python without ambiguity.
-However when sending, this is trickier. Seemingly compatible types, such as the Python int and AVRO int are actually incompatible so in order to avoid risky coercion (```int64``` to ```int32```) we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
+Upon message receipt, type conversion is not needed as it is automatic. Native types are generated.
+
+When sending however, seemingly compatible types, such as Python int and AVRO int are actually incompatible. Sending a Python ```int``` column as an to an AVRO ```int``` field actually resluts in an```int64``` to ```int32``` type conversion. Currentlly this generates an error. In order to avoid risky coercion  we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
 
 In order to send a frame with an Avr schema:
 ```JSON
