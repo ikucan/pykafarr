@@ -5,8 +5,7 @@ services:
   - docker
 
 before_install:
-  - cd dckr/build
-  - docker build iztokkucan/pykafarr_build
+  - docker build dckr/build -t iztokkucan/pykafarr_build:1.0.0
   
 install:
   - pip install -r .requirements.txt
