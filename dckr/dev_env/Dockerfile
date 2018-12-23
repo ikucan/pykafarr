@@ -29,14 +29,14 @@ RUN      mkdir -p /workstem/
 #
 
 # install librdkafka
-#WORKDIR  /workstem
-#RUN      git clone https://github.com/edenhill/librdkafka.git
-#WORKDIR  librdkafka
-#RUN      git checkout v1.0.0-RC5
-##RUN      git checkout eb51812ace00fc3ef3999f8ec041482b1147b0de
-#RUN      ./configure 
-#RUN      make -j 4
-#RUN      make install
+WORKDIR  /workstem
+RUN      git clone https://github.com/edenhill/librdkafka.git
+WORKDIR  librdkafka
+RUN      git checkout v1.0.0-RC5
+#RUN      git checkout eb51812ace00fc3ef3999f8ec041482b1147b0de
+RUN      ./configure 
+RUN      make -j 4
+RUN      make install
 
 # install avro c
 WORKDIR  /workstem
@@ -100,12 +100,4 @@ RUN      python -V
 ## all third party sources are built into default prefix, so needs to be in the path
 #
 ENV LD_LIBRARY_PATH=/usr/local/lib
-
-#
-## check out the work (the SSH keys should be sufficient for authentication)
-#
-WORKDIR  /workstem
-RUN      git clone https://github.com/ikucan/pykafarr.git
-WORKDIR  /workstem/pykafarr/src/
-RUN      python setup.py build_ext --inplace
 

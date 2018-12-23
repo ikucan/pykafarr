@@ -3,7 +3,7 @@
 #       use with caution
 # -------------------------------------------------------
 
-FROM iztokkucan/pykafarr_dev2:1.0.0
+FROM iztokkucan/pykafarr_dev:1.0.0
 
 # use bash instead of sh
 SHELL ["/bin/bash", "-c"]
