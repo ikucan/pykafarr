@@ -1,4 +1,1 @@
 Cython
-numpy
-pandas
-pyarrow
