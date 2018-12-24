@@ -19,6 +19,9 @@ In both cases advantages are simplicity and performance. The boilerplate mechani
 
 The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html ") structures to interface with Kafka.
 
+#### Background:
+The original idea is stolen from here: https://github.com/ah-/kafka_arrow. This is a c++ rewrite and an extension of that work.
+
 #### Performance:
 While no time has been spent on optimisations Pykafarr is already quite performant. It can read, parse and package into Pandas 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests on an underwhelming old laptop in a single-host setup. Reading from a remote kafka topic would change the numbers depending on your network latency.
 
