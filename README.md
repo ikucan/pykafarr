@@ -17,7 +17,7 @@ Producing is trivial. You simply set up your data frame where each row is assuem
 
 In both cases advantages are simplicity and performance. The boilerplate mechanics of deserialisation and serialisation from AVRO to Pandas and the reverse are hidden in the library. Because it is implemented in C++ it has better performance and scalability characteristcs when compared to Python.
 
-The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html ") structures to interface with Kafka.
+The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html) structures to interface with Kafka.
 
 #### Background:
 The original idea is stolen from here: https://github.com/ah-/kafka_arrow. This is a c++ rewrite and an extension of that work.
