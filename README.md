@@ -64,7 +64,7 @@ prod.send('avros.broker.Order', new_orders, 'order_topic')
 ```
 
 #### A note on type conversion:
-Upon message receipt, type conversion is not needed as it is automatic. Native types are generated.
+Upon message receipt, explicit type conversion is not needed default type conversion seems sufficient. Native types are generated. (In the future, it may be desirable to set a "numpy" flag to generate numpy types into nuympy arrays instead.)
 
 When sending however, seemingly compatible types, such as Python int and AVRO int are actually incompatible. Sending a Python ```int``` column as an to an AVRO ```int``` field actually resluts in an```int64``` to ```int32``` type conversion. Currentlly this generates an error. In order to avoid risky coercion  we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
 
