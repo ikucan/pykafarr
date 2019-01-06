@@ -125,8 +125,12 @@ class build_ext(_build_ext):
 # build/temp.linux-x86_64-3.7/pykafarr.o
 #-lm -ldl -lpthread -lrt -lstdc++ -lserdes++ -lserdes -lrdkafka++ -lrdkafka -larrow
 #-o build/lib.linux-x86_64-3.7/pykafarr.cpython-37m-x86_64-linux-gnu.so
-        
-        lnk_cmd = ['g++'] + lnkr_args + [obj_file, '-o', pjoin(build_lib, 'pykafarr.so')]
+        extr=['-Wl,-rpath=/opt/python/miniconda3/envs/pykafarr/lib', '-Wl,--no-as-needed', '-Wl,--sysroot=/']
+
+        so_name='pykafarr.so'
+        so_file = pjoin(build_lib, so_name)
+        libs=['-l'+lib for lib in ['m', 'dl', 'pthread', 'rt', 'stdc++', 'serdes++', 'serdes', 'rdkafka++', 'rdkafka', 'arrow']]
+        lnk_cmd = ['g++'] + compat_args + extr + lnkr_args + libs + [obj_file, '-o', so_file]
         self.spawn(lnk_cmd)
         
     def run(self):
