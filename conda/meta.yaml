@@ -1,0 +1,29 @@
+package:
+    name: pykafarr
+    version: 0.7.0
+
+source:
+    path: ../src
+
+build:
+    number: 0
+
+#outputs:
+#  - name: pykafarr
+#    files:
+#      - py*.so
+
+requirements:
+    build:
+        - python
+        - setuptools
+        - numpy 1.15.4
+        - pyarrow
+        - cython
+
+    run:
+        - python
+
+about:
+    home: https://github.com/ikucan/pykafarr
+    license: Apache
