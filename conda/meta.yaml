@@ -6,12 +6,14 @@ source:
     path: ../src
 
 build:
+    include_recipe: False    
     number: 0
+#    always_include_files:
+#        - lib/libarrow*
+#        - lib/libserdes*
+#        - lib/libserdes*
+#        - lib/libserdes*
 
-#outputs:
-#  - name: pykafarr
-#    files:
-#      - py*.so
 
 requirements:
     build:
@@ -20,10 +22,14 @@ requirements:
         - numpy 1.15.4
         - pyarrow
         - cython
+        - libboost
 
     run:
         - python
-
+        - pyarrow
+        - numpy 1.15.4
+        - libboost
+	
 about:
     home: https://github.com/ikucan/pykafarr
-    license: Apache
+    license: APACHE
