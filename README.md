@@ -90,12 +90,38 @@ def gen_ticks(n):
 At some point there will be an option to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (```int64``` by the time it is in Arrow) to serialise to the Avro ```int``` (```int32```) field.
 
 ### Getting and installing:
+There are quite a few dependencies and are listed individually below. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10.
+
+#### Docker
+Extend the ```ikucan/pykafarr_test_install:1.0.0``` container. Pykafarr is installed in the conda _base_ environment which is fully set up with all the dependencies.
+
+#### Using Conda
+Prerequisites:
+ ```
+ apt-get install -yq libjansson-dev
+ apt-get install -yq libcurl4-gnutls-dev
+ ```
+Recommeded:
+```
+conda create -n <new_env> python=3.7
+```
+Installation:
+```
+conda install -c iztok pykafarr
+```
+The conda package includes all the dependencies apart form jansson and curl. It is however conceivable you could get a version conflict if some of those already exist on your system. Let me know if this happens and I will try to fix. Better yet, submit a pull request if you figure it out.
+
+#### Using Pip
+Ensure you have the dependencies listed below and then run:
+```
+pip install -i https://test.pypi.org/simple/ pykafarr
+```
 #### Dependencies:
 There are a few:
 - apache rdkafka (c & c++)
 - apache avro (c & c++)
 - apache serdes (c & c++)
-- apache arrow (c & c++)
+- apache arrow/pyarrow (c & c++)
 - apache pyarrow (python)
 
 Other things you will need: g++, boost, jansson (JSON parser), snappy and curl dev libs.
@@ -103,13 +129,6 @@ Other things you will need: g++, boost, jansson (JSON parser), snappy and curl d
 A farily isolated developmnet environment is described in the _dev_env_ docker container. If you have any issues installing dependencies I would recommend the Dockerfile as a guide on how to get it built and installed.
 
 The only way this was tested is by building the above rather than installing distros' official versions. While the latter should be ok there are more variables in play.
-
-#### To install
-Ensure you have the dependencies as above and then run:
-
-```
-pip install -i https://test.pypi.org/simple/ pykafarr
-```
 
 #### To build
 Navigate to the src/py directory and run:
@@ -126,7 +145,11 @@ Two docker containers are provied. The development and the runtime. To build the
 ##### Development image
 Provides a complete development environment with all dependencies built and installed in order to build and run *pykafarr*. It is fairly minimal but takes some time to build (~10mins) due to building all the dependencies.
 
+##### Build image
+<tbd>
+  
 ##### Runtime image
+<tbd>
 Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers containing apps could simply use the pykafarr image as the base.
 
 #### To Use
