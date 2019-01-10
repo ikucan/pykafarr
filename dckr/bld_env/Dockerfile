@@ -9,17 +9,6 @@ FROM ikucan/pykafarr_dev:1.0.0
 SHELL ["/bin/bash", "-c"]
 
 #
-## check out the work (the SSH keys should be sufficient for authentication)
-#
-#WORKDIR  /workstem
-#RUN      git clone https://github.com/ikucan/pykafarr.git
-#WORKDIR  /workstem/pykafarr/src/
-#
-## 
-#
-#RUN      python setup.py build_ext --inplace
-
-#
 ## add conda build package(s)
 #
 RUN conda install -y conda-build
