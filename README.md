@@ -17,10 +17,10 @@ In both cases advantages are simplicity and performance. The boilerplate mechani
 
 The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html) structures to interface with Kafka.
 
-#### Background:
+##### Background:
 The original idea is stolen from here: https://github.com/ah-/kafka_arrow. This is a c++ rewrite and an extension of that work.
 
-#### Performance:
+##### Performance:
 While no time has been spent on optimisations Pykafarr is already quite performant. It can read, parse and package into Pandas 100 000 small messages in under 250ms. Note that these numbers are indicative and derived from single-machine tests on an underwhelming old laptop in a single-host setup. Reading from a remote kafka topic would change the numbers depending on your network latency.
 
 #### Status:
@@ -28,15 +28,15 @@ Functionality is still underdeveloped, however what is there is thought to work 
 -So far only tested with Python 3.7 on Ubuntu 18.10. There is no known reason not to try Pykafarr on other platforms. All feedback welcome. Package genration is now dockerised using Conda so this should be easy to extend.
 -CI set up on [_Travis_] (https://travis-ci.org/)
 -_Valgrind_ reports no memory leaks.
-<hr/>
 
-### Getting and installing:
+---
+#### Getting and installing:
 There are quite a few dependencies and are listed individually below. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10.
 
-#### Option 1: Docker (trivial)
+##### Option 1: Docker (trivial)
 Extend the ```ikucan/pykafarr_test_install:1.0.0``` container. Pykafarr is installed in the conda _base_ environment which is fully set up with all the dependencies.
 
-#### Option 2: Using Conda (painless) 
+##### Option 2: Using Conda (painless) 
 Prerequisites:
  ```
  apt-get install -yq libjansson-dev
@@ -55,14 +55,14 @@ The conda package includes all the dependencies apart form jansson and curl. It 
 
 Instructions are for Ubuntu 18.10. Equivalent should work on other Linux distros.
 
-#### Option 3: Using Pip (advanced :)
+##### Option 3: Using Pip (advanced :)
 Pykafarr module without any dependencies is available via Pip. Take care of the dependencies listed below and then run:
 ```
 pip install -i https://test.pypi.org/simple/ pykafarr
 ```
-<hr/>
 
-### Using pykafarr (example):
+---
+#### Using pykafarr (example):
 
 Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type. This is all fairly intuitive.
 
@@ -94,7 +94,7 @@ prod = pykafarr.producer('kfk1:9092 kfk2:9092', 'http://kfk1:8081')
 prod.send('avros.broker.Order', new_orders, 'order_topic')
 ```
 
-#### A note on type conversion:
+##### A note on type conversion:
 Upon message receipt, explicit type conversion is not needed default type conversion seems sufficient. Native types are generated. (In the future, it may be desirable to set a "numpy" flag to generate numpy types into nuympy arrays instead.)
 
 When sending however, seemingly compatible types, such as Python int and AVRO int are actually incompatible. Sending a Python ```int``` column as an to an AVRO ```int``` field actually resluts in an```int64``` to ```int32``` type conversion. Currentlly this generates an error. In order to avoid risky coercion  we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
@@ -115,11 +115,21 @@ def gen_ticks(n):
   ask   = mid + sprd
   return pd.DataFrame({'inst':instr, 't':tms, 'dt':dt, 'bid':bid, 'ask':ask})
 ```
-(well, as appropriate for your data source...).
+(...as appropriate for your data source...).
 
 At some point there will be an option to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (```int64``` by the time it is in Arrow) to serialise to the Avro ```int``` (```int32```) field.
 
-### Dependencies:
+---
+#### Building from source
+In the src/py directory and run:
+
+```
+git clone https://github.com/ikucan/pykafarr.git
+cd pykafarr/src
+python setup.sh build_ext -inplace
+```
+
+##### Dependencies:
 There are a few:
 - apache rdkafka (c & c++)
 - apache avro (c & c++)
@@ -133,15 +143,7 @@ A farily isolated developmnet environment is described in the _dev_env_ docker c
 
 The only way this was tested is by building the above rather than installing distros' official versions. While the latter should be ok there are more variables in play.
 
-#### To build
-Navigate to the src/py directory and run:
-
-```
-git clone https://github.com/ikucan/pykafarr.git
-cd pykafarr/src
-python setup.sh build_ext -inplace
-```
-
+---
 #### Docker Containers
 Two docker containers are provied. The development and the runtime. To build the runtime image the developmnet image must be built first.
 
@@ -155,9 +157,11 @@ Provides a complete development environment with all dependencies built and inst
 <tbd>
 Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers containing apps could simply use the pykafarr image as the base.
 
+---
 #### To Use
 Look at the python and c++ examples in the _test_ directory.
 
+---
 #### Not [yet] supported
 - Keyed messages
 - All Avro primitive types. Only bool, int, long, float, double and string currentlly supported.
@@ -166,11 +170,13 @@ Look at the python and c++ examples in the _test_ directory.
 
 Those will be added some time in the near future, the first priority has been to get something working sensibly released. Please register an issue if you have a preference.
 
+---
 #### Issues/Limitations
 - More testing needs to be done around reading from multiple topics and multiple partitions.
 - Come up with a configurable model of how much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
 - OS. This has only been tested on Ubuntu 18.xx. There is no reason any other Linux versions and MacOS should be an issue. Windows howver might be a different story.
 
+---
 #### References
 - [Apache Arrow C++](https://arrow.apache.org/docs/cpp/index.html "C++ API docs")
 - [Cython & Apache Arrow](https://arrow.apache.org/docs/python/extending.html "Apache Arrow API for usage with Cython")
