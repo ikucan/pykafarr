@@ -145,16 +145,16 @@ The only way this was tested is by building the above rather than installing dis
 
 ---
 #### Docker Containers
-Two docker containers are provied. The development and the runtime. To build the runtime image the developmnet image must be built first.
+Two docker containers are provied. The development and the runtime. To build the runtime image the development image must be built first.
 
 ##### Development image
 Provides a complete development environment with all dependencies built and installed in order to build and run *pykafarr*. It is fairly minimal but takes some time to build (~10mins) due to building all the dependencies.
 
 ##### Build image
-<tbd>
+__*TBD*__
   
 ##### Runtime image
-<tbd>
+__*TBD*__
 Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers containing apps could simply use the pykafarr image as the base.
 
 ---
