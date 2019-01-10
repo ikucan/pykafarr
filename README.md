@@ -17,7 +17,7 @@ In both cases advantages are simplicity and performance. The boilerplate mechani
 
 Pykafarr is standalone, in the sense that it is not part of a larger framework like Spark. It is built on top of Confluent's client Kafka libraries, Apache Arrow and Apache Avro.
 
-The C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html) structures to interface with Kafka.
+In addition, the C++ implemenation is fully independent and unaware of Python and can be used directly. In that case you are working with [Apache Arrow](https://arrow.apache.org/docs/cpp/index.html) structures to interface with Kafka.
 
 ##### Background:
 The original idea is stolen from here: https://github.com/ah-/kafka_arrow. This is a c++ rewrite and an extension of that work.
