@@ -49,9 +49,11 @@ conda create -n new_pykafarr_env python=3.7
 ```
 Installation:
 ```
-conda install -c iztok pykafarr
+conda install -c ikucan pykafarr
 ```
 The conda package includes all the dependencies apart form jansson and curl. It is however conceivable you could get a version conflict if some of those already exist on your system. Let me know if this happens and I will try to fix. Better yet, submit a pull request if you figure it out.
+
+Instructions are for Ubuntu 18.10. Equivalent should work on other Linux distros.
 
 #### Option 3: Using Pip (advanced :)
 Pykafarr module without any dependencies is available via Pip. Take care of the dependencies listed below and then run:
