@@ -27,10 +27,9 @@ While no time has been spent on optimisations Pykafarr is already quite performa
 
 #### Status:
 Functionality is still underdeveloped, however what is there is thought to work without known issues. Please add to the issue register or raise a pull request if you have anything specific in mind.
-<br/><br/>So far only tested with Python 3.7 on Ubuntu 18.10. There is no known reason not to try Pykafarr on other platforms. All feedback welcome.
-<br/><br/>CI set up on [_Travis_] (https://travis-ci.org/)
-<br/><br/>_Valgrind_ reports no memory leaks.
-
+-So far only tested with Python 3.7 on Ubuntu 18.10. There is no known reason not to try Pykafarr on other platforms. All feedback welcome. Package genration is now dockerised using Conda so this should be easy to extend.
+-CI set up on [_Travis_] (https://travis-ci.org/)
+-_Valgrind_ reports no memory leaks.
 <hr/>
 
 ### Getting and installing:
