@@ -18,7 +18,7 @@ cp -d $AVRO_LIBS_PATH/libavro*        $PREFIX/lib
 #cp -d $LIBCURL_LIBS_PATH/libcurl*     $PREFIX/lib
 echo "+++++++++++++++++++++++++++++++++++++++++"
 
-exit 1
+#exit 1
 
 ${PYTHON} setup.py install || exit 1
 
