@@ -99,7 +99,7 @@ Upon message receipt, explicit type conversion is not needed default type conver
 
 When sending however, seemingly compatible types, such as Python int and AVRO int are actually incompatible. Sending a Python ```int``` column as an to an AVRO ```int``` field actually resluts in an```int64``` to ```int32``` type conversion. Currentlly this generates an error. In order to avoid risky coercion  we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
 
-In order to send a frame with an Avr schema:
+In order to send a frame with an Avro schema:
 ```JSON
 {"subject":"avros.pricing.Tick","version":1,"id":1,"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fields\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type\":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}
 ```
