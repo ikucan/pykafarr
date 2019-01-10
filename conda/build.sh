@@ -2,7 +2,7 @@
 
 export ARROW_LIBS_PATH=/usr/local/lib
 export SERDES_LIBS_PATH=/usr/local/lib
-export KAFKA_LIBS_PATH=/usr/lib
+export KAFKA_LIBS_PATH=/usr/local/lib
 export AVRO_LIBS_PATH=/usr/local/lib
 export JANSSON_LIBS_PATH=/usr/lib/x86_64-linux-gnu/
 export LIBCURL_LIBS_PATH=/usr/lib/x86_64-linux-gnu/
