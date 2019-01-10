@@ -27,8 +27,36 @@ While no time has been spent on optimisations Pykafarr is already quite performa
 
 #### Status:
 Functionality is still underdeveloped, however what is there is thought to work without known issues. Please add to the issue register or raise a pull request if you have anything specific in mind.
-<br/><br/>So far only tested with Python3 on Ubuntu but no known reason not to try other platforms.
+<br/><br/>So far only tested with Python 3.7 on Ubuntu 18.10 but there is no known reason not to try other platforms.
 <br/><br/>_Valgrind_ reports no memory leaks.
+
+### Getting and installing:
+There are quite a few dependencies and are listed individually below. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10.
+
+#### Docker
+Extend the ```ikucan/pykafarr_test_install:1.0.0``` container. Pykafarr is installed in the conda _base_ environment which is fully set up with all the dependencies.
+
+#### Using Conda
+Prerequisites:
+ ```
+ apt-get install -yq libjansson-dev
+ apt-get install -yq libcurl4-gnutls-dev
+ ```
+Recommeded:
+```
+conda create -n <new_env> python=3.7
+```
+Installation:
+```
+conda install -c iztok pykafarr
+```
+The conda package includes all the dependencies apart form jansson and curl. It is however conceivable you could get a version conflict if some of those already exist on your system. Let me know if this happens and I will try to fix. Better yet, submit a pull request if you figure it out.
+
+#### Using Pip
+Ensure you have the dependencies listed below and then run:
+```
+pip install -i https://test.pypi.org/simple/ pykafarr
+```
 
 ### Example:
 
@@ -60,7 +88,6 @@ prod = pykafarr.producer('kfk1:9092 kfk2:9092', 'http://kfk1:8081')
 # 2. the data
 # 3. target topic
 prod.send('avros.broker.Order', new_orders, 'order_topic')
-
 ```
 
 #### A note on type conversion:
@@ -72,8 +99,7 @@ In order to send a frame with an Avr schema:
 ```JSON
 {"subject":"avros.pricing.Tick","version":1,"id":1,"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fields\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type\":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}
 ```
-
-I can enforce my Pandas data types like this:
+you can enforce column types to be more compatible with C/C++ primitive types like this:
 ```python
 def gen_ticks(n):
   instr = ['GBPUSD'] * n
@@ -89,34 +115,7 @@ def gen_ticks(n):
 
 At some point there will be an option to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (```int64``` by the time it is in Arrow) to serialise to the Avro ```int``` (```int32```) field.
 
-### Getting and installing:
-There are quite a few dependencies and are listed individually below. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10.
-
-#### Docker
-Extend the ```ikucan/pykafarr_test_install:1.0.0``` container. Pykafarr is installed in the conda _base_ environment which is fully set up with all the dependencies.
-
-#### Using Conda
-Prerequisites:
- ```
- apt-get install -yq libjansson-dev
- apt-get install -yq libcurl4-gnutls-dev
- ```
-Recommeded:
-```
-conda create -n <new_env> python=3.7
-```
-Installation:
-```
-conda install -c iztok pykafarr
-```
-The conda package includes all the dependencies apart form jansson and curl. It is however conceivable you could get a version conflict if some of those already exist on your system. Let me know if this happens and I will try to fix. Better yet, submit a pull request if you figure it out.
-
-#### Using Pip
-Ensure you have the dependencies listed below and then run:
-```
-pip install -i https://test.pypi.org/simple/ pykafarr
-```
-#### Dependencies:
+### Dependencies:
 There are a few:
 - apache rdkafka (c & c++)
 - apache avro (c & c++)
@@ -167,7 +166,6 @@ Those will be added some time in the near future, the first priority has been to
 - More testing needs to be done around reading from multiple topics and multiple partitions.
 - Come up with a configurable model of how much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
 - OS. This has only been tested on Ubuntu 18.xx. There is no reason any other Linux versions and MacOS should be an issue. Windows howver might be a different story.
-
 
 #### References
 - [Apache Arrow C++](https://arrow.apache.org/docs/cpp/index.html "C++ API docs")
