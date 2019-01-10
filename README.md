@@ -27,10 +27,42 @@ While no time has been spent on optimisations Pykafarr is already quite performa
 
 #### Status:
 Functionality is still underdeveloped, however what is there is thought to work without known issues. Please add to the issue register or raise a pull request if you have anything specific in mind.
-<br/><br/>So far only tested with Python3 on Ubuntu but no known reason not to try other platforms.
-<br/><br/>_Valgrind_ reports no memory leaks.
+-So far only tested with Python 3.7 on Ubuntu 18.10. There is no known reason not to try Pykafarr on other platforms. All feedback welcome. Package genration is now dockerised using Conda so this should be easy to extend.
+-CI set up on [_Travis_] (https://travis-ci.org/)
+-_Valgrind_ reports no memory leaks.
+<hr/>
 
-### Example:
+### Getting and installing:
+There are quite a few dependencies and are listed individually below. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10.
+
+#### Option 1: Docker (trivial)
+Extend the ```ikucan/pykafarr_test_install:1.0.0``` container. Pykafarr is installed in the conda _base_ environment which is fully set up with all the dependencies.
+
+#### Option 2: Using Conda (painless) 
+Prerequisites:
+ ```
+ apt-get install -yq libjansson-dev
+ apt-get install -yq libcurl4-gnutls-dev
+ ```
+Recommeded:
+Most of the third party depencencies are bundled with the conda package, so these could overwrite your existing environment. Unlikely to cause problems but to be sure, create a separate virtual environement.
+```
+conda create -n new_pykafarr_env python=3.7
+```
+Installation:
+```
+conda install -c iztok pykafarr
+```
+The conda package includes all the dependencies apart form jansson and curl. It is however conceivable you could get a version conflict if some of those already exist on your system. Let me know if this happens and I will try to fix. Better yet, submit a pull request if you figure it out.
+
+#### Option 3: Using Pip (advanced :)
+Pykafarr module without any dependencies is available via Pip. Take care of the dependencies listed below and then run:
+```
+pip install -i https://test.pypi.org/simple/ pykafarr
+```
+<hr/>
+
+### Using pykafarr (example):
 
 Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type. This is all fairly intuitive.
 
@@ -60,7 +92,6 @@ prod = pykafarr.producer('kfk1:9092 kfk2:9092', 'http://kfk1:8081')
 # 2. the data
 # 3. target topic
 prod.send('avros.broker.Order', new_orders, 'order_topic')
-
 ```
 
 #### A note on type conversion:
@@ -68,12 +99,11 @@ Upon message receipt, explicit type conversion is not needed default type conver
 
 When sending however, seemingly compatible types, such as Python int and AVRO int are actually incompatible. Sending a Python ```int``` column as an to an AVRO ```int``` field actually resluts in an```int64``` to ```int32``` type conversion. Currentlly this generates an error. In order to avoid risky coercion  we need to fix types in the pandas data frame more explicitly where necessary. Numpy type conversion functions such as numpy.int32 etc work really well for this purpose.
 
-In order to send a frame with an Avr schema:
+In order to send a frame with an Avro schema:
 ```JSON
 {"subject":"avros.pricing.Tick","version":1,"id":1,"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fields\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type\":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}
 ```
-
-I can enforce my Pandas data types like this:
+you can enforce column types to be more compatible with C/C++ primitive types like this:
 ```python
 def gen_ticks(n):
   instr = ['GBPUSD'] * n
@@ -89,13 +119,12 @@ def gen_ticks(n):
 
 At some point there will be an option to allow risky type conversion (e.g. from int64 to int 32) at users' discretion. This would then allow a Pandas dataframe containing a Python ```int``` column (```int64``` by the time it is in Arrow) to serialise to the Avro ```int``` (```int32```) field.
 
-### Getting and installing:
-#### Dependencies:
+### Dependencies:
 There are a few:
 - apache rdkafka (c & c++)
 - apache avro (c & c++)
 - apache serdes (c & c++)
-- apache arrow (c & c++)
+- apache arrow/pyarrow (c & c++)
 - apache pyarrow (python)
 
 Other things you will need: g++, boost, jansson (JSON parser), snappy and curl dev libs.
@@ -103,13 +132,6 @@ Other things you will need: g++, boost, jansson (JSON parser), snappy and curl d
 A farily isolated developmnet environment is described in the _dev_env_ docker container. If you have any issues installing dependencies I would recommend the Dockerfile as a guide on how to get it built and installed.
 
 The only way this was tested is by building the above rather than installing distros' official versions. While the latter should be ok there are more variables in play.
-
-#### To install
-Ensure you have the dependencies as above and then run:
-
-```
-pip install -i https://test.pypi.org/simple/ pykafarr
-```
 
 #### To build
 Navigate to the src/py directory and run:
@@ -126,7 +148,11 @@ Two docker containers are provied. The development and the runtime. To build the
 ##### Development image
 Provides a complete development environment with all dependencies built and installed in order to build and run *pykafarr*. It is fairly minimal but takes some time to build (~10mins) due to building all the dependencies.
 
+##### Build image
+<tbd>
+  
 ##### Runtime image
+<tbd>
 Runtime image can be used as a basis for creating python applications whcih use pykafarr. The idea is that your docker containers containing apps could simply use the pykafarr image as the base.
 
 #### To Use
@@ -144,7 +170,6 @@ Those will be added some time in the near future, the first priority has been to
 - More testing needs to be done around reading from multiple topics and multiple partitions.
 - Come up with a configurable model of how much kafka metadata to return (offset, partition, topic, etc...). In an idealised model none of this would be needed but in practice it is often desirable. 
 - OS. This has only been tested on Ubuntu 18.xx. There is no reason any other Linux versions and MacOS should be an issue. Windows howver might be a different story.
-
 
 #### References
 - [Apache Arrow C++](https://arrow.apache.org/docs/cpp/index.html "C++ API docs")
