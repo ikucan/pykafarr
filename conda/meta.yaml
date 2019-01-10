@@ -19,16 +19,16 @@ requirements:
     build:
         - python
         - setuptools
-        - numpy 1.15.4
-        - pyarrow
+        - numpy    1.15.4
+        - pyarrow  0.11.1
         - cython
-        - libboost
+        - libboost 1.67.0
 
     run:
         - python
-        - pyarrow
-        - numpy 1.15.4
-        - libboost
+        - pyarrow   0.11.1
+        - numpy     1.15.4
+        - libboost  1.67.0
 	
 about:
     home: https://github.com/ikucan/pykafarr
