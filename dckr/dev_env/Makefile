@@ -1,5 +1,5 @@
 TAG = 1.0.0
-PFX = iztokkucan/pykafarr_dev
+PFX = ikucan/pykafarr_dev
 
 build:
 	docker build -t $(PFX):$(TAG) .
