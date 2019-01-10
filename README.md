@@ -27,24 +27,27 @@ While no time has been spent on optimisations Pykafarr is already quite performa
 
 #### Status:
 Functionality is still underdeveloped, however what is there is thought to work without known issues. Please add to the issue register or raise a pull request if you have anything specific in mind.
-<br/><br/>So far only tested with Python 3.7 on Ubuntu 18.10 but there is no known reason not to try other platforms.
+<br/><br/>So far only tested with Python 3.7 on Ubuntu 18.10 but there is no known reason not to try on other platforms. All feedback welcome.
 <br/><br/>_Valgrind_ reports no memory leaks.
+
+<hr/>
 
 ### Getting and installing:
 There are quite a few dependencies and are listed individually below. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10.
 
-#### Docker
+#### Option 1: Docker (trivial)
 Extend the ```ikucan/pykafarr_test_install:1.0.0``` container. Pykafarr is installed in the conda _base_ environment which is fully set up with all the dependencies.
 
-#### Using Conda
+#### Option 2: Using Conda (painless) 
 Prerequisites:
  ```
  apt-get install -yq libjansson-dev
  apt-get install -yq libcurl4-gnutls-dev
  ```
 Recommeded:
+Most of the third party depencencies are bundled with the conda package, so these could overwrite your existing environment. Unlikely to cause problems but to be sure, create a separate virtual environement.
 ```
-conda create -n <new_env> python=3.7
+conda create -n new_pykafarr_env python=3.7
 ```
 Installation:
 ```
@@ -52,13 +55,14 @@ conda install -c iztok pykafarr
 ```
 The conda package includes all the dependencies apart form jansson and curl. It is however conceivable you could get a version conflict if some of those already exist on your system. Let me know if this happens and I will try to fix. Better yet, submit a pull request if you figure it out.
 
-#### Using Pip
-Ensure you have the dependencies listed below and then run:
+#### Option 3: Using Pip (advanced :)
+Pykafarr module without any dependencies is available via Pip. Take care of the dependencies listed below and then run:
 ```
 pip install -i https://test.pypi.org/simple/ pykafarr
 ```
+<hr/>
 
-### Example:
+### Using pykafarr (example):
 
 Message receipt. Wait for a maximum number of messages ro maximum amount of time to receive. Once either is reached, return with a Pandas frame, each row a message, each column a field as defined by the Avro schema for the message type. This is all fairly intuitive.
 
