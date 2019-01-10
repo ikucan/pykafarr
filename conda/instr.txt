@@ -1,0 +1,2 @@
+conda-build --no-remove-work-dir .
+anaconda upload --force /opt/python/miniconda3/envs/pykafar/conda-bld/linux-64/pykafarr-0.7.0-py37_0.tar.bz2
