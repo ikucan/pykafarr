@@ -30,6 +30,13 @@ RUN      rm confluent-5.1.0-2.11.tar.gz
 ENV      CONFLUENT_HOME=/opt/confluent-5.1.0
 COPY     start_kfk.sh /opt/start_kfk.sh
 
+#
+## the wait script
+#
+WORKDIR  /opt
+RUN      wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+RUN      chmod u+x wait-for-it.sh      
+
 # fix up the path
 ENV PATH=${JAVA_HOME}/bin:${CONFLUENT_HOME}/bin:${PATH}
 
