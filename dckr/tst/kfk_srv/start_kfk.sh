@@ -19,6 +19,10 @@ ${CONFLUENT_HOME}/bin/schema-registry-start ${CONFLUENT_HOME}/etc/schema-registr
 echo "wait for schema registry to start up on port 8081"
 /opt/wait-for-it.sh -t 60 0.0.0.0:8081 || exit -1
 
+curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+     --data '{"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fields\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type\":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}' \
+     http://kfk:8081/subjects/Kafka-value/versions
+
 if [ "X${DEBUG}X" == "XtrueX" ]; then
     echo "-----------------------------------------------"
     echo "-----------------------------------------------"

@@ -6,7 +6,7 @@ RUN apt-get update --fix-missing
 
 # install required env
 RUN apt-get install -yq wget
-RUN apt-get install -yq vim tree htop
+RUN apt-get install -yq vim tree htop curl
 RUN  apt-get install -yq ssh
 
 #
@@ -43,11 +43,10 @@ ENV PATH=${JAVA_HOME}/bin:${CONFLUENT_HOME}/bin:${PATH}
 #
 ## config the sshd
 #
-RUN  mkdir /var/run/sshd
-
-RUN      mkdir /root/.ssh
-COPY     id_rsa.pub /root/.ssh/authorized_keys
-RUN      chmod 600 /root/.ssh/*
+# RUN  mkdir /var/run/sshd
+# RUN      mkdir /root/.ssh
+# COPY     id_rsa.pub /root/.ssh/authorized_keys
+# RUN      chmod 600 /root/.ssh/*
 
 #
 ## custom script to start zookeeper, kafka and registry services
