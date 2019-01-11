@@ -3,32 +3,30 @@ version: '3.0'
 services:
   kfk:
     image: ikucan/pykafarr_kfk_tst_srvr:1.0.0
-    #hostname: kfk_hst
+    hostname: kfk
     environment:
       - DEBUG=true
     networks:
       - pykafarr_tst_net
     extra_hosts:
-      - "bric2:200.200.0.1"
+      - "bric2:100.100.0.1"
 
-  app1:
+  smpl_rd:
     image: ikucan/pykafarr_tst_apps:1.0.0
     #hostname: app1_hst
     networks:
       - pykafarr_tst_net
     depends_on:
       - "kfk"
-    command: ["./wait-for-it.sh", "-t", "60", "kfk:8081", "--", "python", "app1.py"]
+    command: ["./wait-for-it.sh", "-t", "60", "kfk:8081", "--", "python", "-u", "smpl_rd.py"]
     extra_hosts:
-      - "bric2:200.200.0.1"
+      - "bric2:100.100.0.1"
 
 networks:
   pykafarr_tst_net:
     external: true
  
 #
-# a very clunky method but this works:
-# https://forums.docker.com/t/accessing-host-machine-from-within-docker-container/14248/4
-# NOTE that the external network must be created separately
-#  >> docker network create -d bridge --subnet 200.200.0.0/24 --gateway 200.200.0.1 pykafarr_tst_net
+# clunky but works: https://forums.docker.com/t/accessing-host-machine-from-within-docker-container/14248/4
+#  >> docker network create -d bridge --subnet 100.100.0.0/24 --gateway 100.100.0.1 pykafarr_tst_net
 #
