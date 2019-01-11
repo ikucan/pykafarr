@@ -26,5 +26,3 @@ ENV      PATH=/opt/miniconda/bin/:$PATH
 ## ideally, all the depencencies would be declared and installed.
 #
 RUN      conda install -y -c iztok pykafarr
-
-

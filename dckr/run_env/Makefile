@@ -1,5 +1,5 @@
 TAG = 1.0.0
-PFX = ikucan/pykafarr_test_install
+PFX = ikucan/pykafarr_runtime
 
 build:
 	docker build -t $(PFX):$(TAG) .
