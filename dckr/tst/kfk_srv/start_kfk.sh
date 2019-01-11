@@ -21,7 +21,7 @@ echo "wait for schema registry to start up on port 8081"
 
 curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
      --data '{"schema":"{\"type\":\"record\",\"name\":\"Tick\",\"namespace\":\"avros.pricing.ig\",\"fields\":[{\"name\":\"inst\",\"type\":\"string\"},{\"name\":\"t\",\"type\":\"long\"},{\"name\":\"dt\",\"type\":\"int\"},{\"name\":\"bid\",\"type\":\"float\"},{\"name\":\"ask\",\"type\":\"float\"}]}"}' \
-     http://kfk:8081/subjects/Kafka-value/versions
+     http://kfk:8081/subjects/avros.pricing.ig.Tick/versions
 
 if [ "X${DEBUG}X" == "XtrueX" ]; then
     echo "-----------------------------------------------"

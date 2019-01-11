@@ -22,6 +22,17 @@ services:
     extra_hosts:
       - "bric2:100.100.0.1"
 
+  smpl_wrt:
+    image: ikucan/pykafarr_tst_apps:1.0.0
+    #hostname: app1_hst
+    networks:
+      - pykafarr_tst_net
+    depends_on:
+      - "kfk"
+    command: ["./wait-for-it.sh", "-t", "60", "kfk:8081", "--", "python", "-u", "smpl_wrt.py"]
+    extra_hosts:
+      - "bric2:100.100.0.1"
+
 networks:
   pykafarr_tst_net:
     external: true

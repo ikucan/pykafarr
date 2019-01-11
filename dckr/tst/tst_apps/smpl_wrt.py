@@ -1,6 +1,5 @@
 import pykafarr
 import sys
-import time
 import random as r
 import numpy  as np
 import pandas as pd
@@ -31,14 +30,10 @@ reg_url = 'http://kfk:8081'.encode('utf-8')
 
 p = pykafarr.producer(srvrs, reg_url)
 
+data = gen_ticks(2000)
 
 try:
-  for i in range(0, 10):
-    print("------- Run %. Sending 2000. ----" % i)
-    data = gen_ticks(2000)
-    p.send(cstr('avros.pricing.ig.Tick'), data, cstr('test_topic_1'))
-    time.sleep(2)
-
+  p.send(cstr('avros.pricing.ig.Tick'), data, cstr('test_topic_1'))
 except RuntimeError: 
   type, value, traceback = sys.exc_info()
   print("RuntimeError exception caught in python")
