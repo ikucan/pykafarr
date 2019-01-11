@@ -33,10 +33,10 @@ Functionality is still underdeveloped, however what is there is thought to work 
 
 ---
 #### Getting and installing:
-There are quite a few dependencies as listed below. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10 but other than possible version clashes in dependencies there are no fundamental reasons why it would not work on other systems.
+This should now be very easy. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10 but other than possible version clashes in dependencies there are no fundamental reasons why it would not work on other systems.
 
 ##### Option 1: Docker (trivial)
-Extend the ```ikucan/pykafarr_test_install:1.0.0``` container. Pykafarr is installed in the conda _base_ environment which is fully set up with all the dependencies.
+Extend the ```ikucan/pykafarr_runtime:1.0.0``` container. Pykafarr is installed in the default (and only) python environment  which is fully set up with all the dependencies. The actual python is the miniconda distributin of cypython.
 
 ##### Option 2: Using Conda (painless) 
 Prerequisites:
