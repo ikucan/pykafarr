@@ -1,4 +1,4 @@
-https://travis-ci.org/ikucan/pykafarr.svg?branch=master
+![mater branch build status](https://travis-ci.org/ikucan/pykafarr.svg?branch=master)
 
 ### Pykafarr is a standalone library for fast streaming of Kafka messages to and from Pandas
 
