@@ -5,8 +5,9 @@ services:
   - docker
 
 before_install:
-  - docker build dckr/bld_env -t ikucan/pykafarr_build:1.0.0
-  
+  - docker pull ikucan/pykafarr_build:1.0.0
+  - docker run ikucan/pykafarr_build:1.0.0
+
 install:
   - pip install -r .requirements.txt
   
