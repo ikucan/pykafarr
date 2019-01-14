@@ -2,10 +2,9 @@
 <tr>
   <td>Build Status</td>
   <td>
-		<a href="https://travis-ci.org/ikucan/pykafarr">
-			
-		<img src="https://api.travis-ci.org/ikucan/pykafarr.svg?branch=master" alt="status" /></td>
-		</a>
+    <a href="https://travis-ci.org/ikucan/pykafarr">
+    <img src="https://api.travis-ci.org/ikucan/pykafarr.svg?branch=master" alt="status" /></td>
+    </a>
 </tr>
 <tr>
   <td>Package Status</td>
