@@ -10,7 +10,8 @@ install:
 
 #script:
 #  - docker run ikucan/pykafarr_build:1.0.0
-  - test `echo 1` -eq 1
+  - echo  $(echo 123)
+  - test $(echo 1) -eq 1
 #  - test `docker run ikucan/pykafarr_runtime:1.0.0 conda list | grep pykafarr | wc -l` -eq 1
 
 matrix:
