@@ -2,6 +2,7 @@ language: python
 #sudo: required
 cache:
   - $CACHE_DIR
+
 services:
   - docker
 
@@ -21,3 +22,7 @@ matrix:
     include:
         - dist: xenail
           python: 3.7
+
+env:
+  global:
+    - CACHE_DIR=$HOME/.cache/docker
