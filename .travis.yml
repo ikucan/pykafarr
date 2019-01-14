@@ -17,3 +17,4 @@ matrix:
         - name: "Docker contained build"
           dist: "xenail"
           python: "3.7"
+ 
