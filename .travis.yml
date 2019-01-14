@@ -1,6 +1,7 @@
 language: python
 #sudo: required
-
+cache:
+  - $CACHE_DIR
 services:
   - docker
 
@@ -10,6 +11,8 @@ before_install:
 
 install:
   - pip install -r .requirements.txt
+  - echo `date` >> $CACHE_DIR/log
+  - cat $CACHE_DIR/log
   
 script:
   - pwd
