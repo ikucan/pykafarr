@@ -1,5 +1,3 @@
-![CI status]()
-![conda release img=]()
 <table>
 <tr>
   <td>Build Status</td>
