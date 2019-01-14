@@ -1,18 +1,16 @@
 language: python
 #sudo: required
 
-#services:
-#  - docker
+services:
+  - docker
 
 install:
-#  - docker pull ikucan/pykafarr_build:1.0.0
-#  - docker pull ikucan/pykafarr_runtime:1.0.0
+  - docker pull ikucan/pykafarr_build:1.0.0
+  - docker pull ikucan/pykafarr_runtime:1.0.0
+  - docker run ikucan/pykafarr_build:1.0.0
 
-#script:
-#  - docker run ikucan/pykafarr_build:1.0.0
-  - echo  $(echo 123)
-  - test $(echo 1) -eq 1
-#  - test `docker run ikucan/pykafarr_runtime:1.0.0 conda list | grep pykafarr | wc -l` -eq 1
+script:
+  - test $(docker run ikucan/pykafarr_runtime:1.0.0 conda list | grep pykafarr | wc -l) -eq 1
 
 matrix:
     include:
