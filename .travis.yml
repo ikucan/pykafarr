@@ -6,9 +6,9 @@ cache:
 services:
   - docker
 
-before_install:
-  - docker pull ikucan/pykafarr_build:1.0.0
-  - docker run ikucan/pykafarr_build:1.0.0
+#before_install:
+#  - docker pull ikucan/pykafarr_build:1.0.0
+#  - docker run ikucan/pykafarr_build:1.0.0
 
 install:
   - mkdir -p $CACHE_DIR
@@ -17,7 +17,8 @@ install:
   - pip install -r .requirements.txt
   
 script:
-  - pwd
+ - cd $CACHE_DIR
+ - pwd
 
 matrix:
     include:
