@@ -10,7 +10,7 @@ install:
 
 #script:
 #  - docker run ikucan/pykafarr_build:1.0.0
-  - [[ 1 -eq 0 ]]
+  - [[ 1 -eq 1 ]]
 
 matrix:
     include:
