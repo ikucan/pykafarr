@@ -6,10 +6,10 @@ services:
 
 install:
   - docker pull ikucan/pykafarr_build:1.0.0
-  - docker pull ikucan/pykafarr_runtime:1.0.0
   - docker run ikucan/pykafarr_build:1.0.0
 
 script:
+  - docker pull ikucan/pykafarr_runtime:1.0.0
   - docker run ikucan/pykafarr_test_install_process:1.0.0
 
 matrix:
