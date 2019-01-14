@@ -11,7 +11,8 @@ services:
 before_install:
   - if [[ ! -d $CACHE_DIR ]] ; then echo "creating cache dir $CACHE_DIR"; mkdir -p $CACHE_DIR; fi
   - wget http://packages.confluent.io/archive/5.1/confluent-5.1.0-2.11.tar.gz
-  - if [[ ! -f $CACHE_DIR/confluent-5.1.0-2.11.tar.gz ]] ; then echo "copying file to cache: $CACHE_DIR"; cp confluent-5.1.0-2.11.tar.gz $CACHE_DIR; fi
+  - echo 123
+  - if [[ ! -e $CACHE_DIR/confluent-5.1.0-2.11.tar.gz ]] ; then echo "copying file to cache: $CACHE_DIR"; cp confluent-5.1.0-2.11.tar.gz $CACHE_DIR; fi
   - cp $CACHE_DIR/confluent-5.1.0-2.11.tar.gz .
   
 #  - docker pull ikucan/pykafarr_build:1.0.0
