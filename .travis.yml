@@ -14,8 +14,7 @@ install:
 
 script:
   - docker run ikucan/pykafarr_build:1.0.0
-  - [[ `docker run ikucan/pykafarr_runtime:1.0.0 conda list | grep pykafarr | wc -l` -eq 0 ]]
-
+  
 matrix:
     include:
         - name: "Docker contained build"
