@@ -1,40 +1,17 @@
 language: python
 #sudo: required
 
-cache:
-  directories:
-    - $CACHE_DIR
-
 services:
   - docker
 
-before_install:
-  - if [[ ! -d $CACHE_DIR ]] ; then echo "creating cache dir $CACHE_DIR"; mkdir -p $CACHE_DIR; fi
-  
-#  - docker pull ikucan/pykafarr_build:1.0.0
-#  - docker run ikucan/pykafarr_build:1.0.0
-
 install:
-  - wget http://packages.confluent.io/archive/5.1/confluent-5.1.0-2.11.tar.gz
-  - ls -Fila
-  - ls -Fila $CACHE_DIR
-  - if [[ ! -e $CACHE_DIR/confluent-5.1.0-2.11.tar.gz ]] ; then echo "copying file to cache $CACHE_DIR"; cp confluent-5.1.0-2.11.tar.gz $CACHE_DIR/; fi
-  - cp $CACHE_DIR/confluent-5.1.0-2.11.tar.gz .
-  - ls -Fila $CACHE_DIR
-  - ls -Fila $CACHE_DIR
-  - echo `date` >> $CACHE_DIR/log.txt
-  - cat $CACHE_DIR/log.txt
-#  - pip install -r .requirements.txt
-  
+  - docker pull ikucan/pykafarr_build:1.0.0
+
 script:
- - cd $CACHE_DIR
- - pwd
+  - docker run ikucan/pykafarr_build:1.0.0
 
 matrix:
     include:
-        - dist: xenail
-          python: 3.7
-
-env:
-  global:
-    - CACHE_DIR=$HOME/.cache/docker
+        - name: "Docker contained build"
+          dist: "xenail"
+          python: "3.7"
