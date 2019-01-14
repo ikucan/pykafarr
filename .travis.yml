@@ -1,7 +1,9 @@
 language: python
 #sudo: required
+
 cache:
-  - $CACHE_DIR
+  directories:
+    - $CACHE_DIR
 
 services:
   - docker
