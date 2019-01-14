@@ -11,9 +11,9 @@ services:
 #  - docker run ikucan/pykafarr_build:1.0.0
 
 install:
-  - mkdir -p $CACHE_DIR
-  - echo `date` >> $CACHE_DIR/log
-  - cat $CACHE_DIR/log
+  - if [[ -d $CACHE_DIR ] ; then echo "creating cached dir ${CACHE_DIR}"; mkdir -p ${CACHE_DIR}; fi
+  - echo `date` >> $CACHE_DIR/log.txt
+  - cat $CACHE_DIR/log.txt
 #  - pip install -r .requirements.txt
   
 script:
