@@ -1,5 +1,5 @@
 ![CI status](https://travis-ci.org/ikucan/pykafarr.svg?branch=master)
-![conda release](https://anaconda.org/ikucan/pykafarr/badges/installer/conda.svg)
+![conda release img=https://anaconda.org/ikucan/pykafarr/badges/installer/conda.svg](https://anaconda.org/ikucan/pykafarr)
 
 
 ### Pykafarr is a standalone library for fast streaming of Kafka messages to and from Pandas
