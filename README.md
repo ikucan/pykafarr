@@ -1,20 +1,10 @@
 <a href="https://travis-ci.org/ikucan/pykafarr">
   <img src="https://api.travis-ci.org/ikucan/pykafarr.svg?branch=master" alt="status" /></td>
 </a>
+<a href="https://anaconda.org/ikucan/pykafarr">
+  <img src="https://anaconda.org/ikucan/pykafarr/badges/installer/conda.svg" alt="status" /></td>
+</a>
 
-<table>
-<tr>
-  <td>Build Status</td>
-  <td>
-</tr>
-<tr>
-  <td>Package Status</td>
-  <td>
-		<a href="https://anaconda.org/ikucan/pykafarr">
-		<img src="https://anaconda.org/ikucan/pykafarr/badges/installer/conda.svg" alt="status" /></td>
-		</a>
-</tr>
-</table>
 ### Pykafarr is a standalone library for fast streaming of Kafka messages to and from Pandas
 
 Pykafarr provides a fast, batching Kafka client. Messages are read on Kafka and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client. Several messages can be returned as a result of a single _"poll"_ to Kafka. As a result the overhead costs of the Python VM are minimised. Data is also returned in a Python-friendly format, arguably one of the preferred formats.
