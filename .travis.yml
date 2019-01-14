@@ -14,7 +14,7 @@ install:
   - mkdir -p $CACHE_DIR
   - echo `date` >> $CACHE_DIR/log
   - cat $CACHE_DIR/log
-  - pip install -r .requirements.txt
+#  - pip install -r .requirements.txt
   
 script:
  - cd $CACHE_DIR
