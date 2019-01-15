@@ -1,3 +1,10 @@
+<a href="https://travis-ci.org/ikucan/pykafarr">
+  <img src="https://api.travis-ci.org/ikucan/pykafarr.svg?branch=master" alt="status" /></td>
+</a>
+<a href="https://anaconda.org/ikucan/pykafarr">
+  <img src="https://anaconda.org/ikucan/pykafarr/badges/installer/conda.svg" alt="status" /></td>
+</a>
+
 ### Pykafarr is a standalone library for fast streaming of Kafka messages to and from Pandas
 
 Pykafarr provides a fast, batching Kafka client. Messages are read on Kafka and transformed into an Arrow record batch. This is then wrapped as a Pandas data frame and returned to the Python client. Several messages can be returned as a result of a single _"poll"_ to Kafka. As a result the overhead costs of the Python VM are minimised. Data is also returned in a Python-friendly format, arguably one of the preferred formats.
@@ -33,7 +40,7 @@ Functionality is still underdeveloped, however what is there is thought to work 
 
 ---
 #### Getting and installing:
-This should now be very easy. The installation has so far only been tested with Python 3.7 on Ubuntu 18.10 but other than possible version clashes in dependencies there are no fundamental reasons why it would not work on other systems.
+The installation has so far only been tested with Python 3.7 on Ubuntu 18.10 but other than possible version clashes in dependencies there are no fundamental reasons why it would not work on other systems.
 
 ##### Option 1: Docker (trivial)
 Extend the ```ikucan/pykafarr_runtime:1.0.0``` container. Pykafarr is installed in the default (and only) python environment  which is fully set up with all the dependencies. The actual python is the miniconda distributin of cypython.
@@ -62,6 +69,7 @@ Pykafarr module without any dependencies is available via Pip. Take care of the 
 ```
 pip install -i https://test.pypi.org/simple/ pykafarr
 ```
+Installing the dependencies manually is somewhat involved but a very good example is in the ```ikucan/pykafarr_dev```  docker image. If you follow those steps you will get everything you need.
 
 ---
 #### Using pykafarr (example):
