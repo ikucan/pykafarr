@@ -25,4 +25,5 @@ ENV      PATH=/opt/miniconda/bin/:$PATH
 #
 ## ideally, all the depencencies would be declared and installed.
 #
-RUN      conda install -y -c ikucan pykafarr
+CMD      ["conda", "install", "-y", "-c", "ikucan", "pykafarr"]
+#install -y -c iztok pykafarr"
