@@ -36,13 +36,14 @@ def main():
   lstnr = pykafarr.listener(srvrs, grp_id, [tpc_2], reg_url)
 
   # generate a block of 2000 ticks
-  data = gen_ticks(10)
+  n_ticks = 10
+  data = gen_ticks(n_ticks)
 
   try:
       print ('- SENDING ---------------------')
       print(data)
       prdcr.send(cstr('avros.pricing.ig.Tick'), data, tpc_1)
-      nme, frm = lstnr.poll(5000, 100)
+      nme, frm = lstnr.poll(n_ticks, 20)
       print ('- RECEIVED --------------------')
       print(frm)
   except RuntimeError: 

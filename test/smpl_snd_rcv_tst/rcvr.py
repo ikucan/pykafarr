@@ -22,14 +22,16 @@ def main():
   prdcr = pykafarr.producer(srvrs, reg_url)
   lstnr = pykafarr.listener(srvrs, grp_id, [tpc_1], reg_url)
 
+  n_ticks = 10
+
   try:
-    nme, frm = lstnr.poll(5000, 100)
+    nme, frm = lstnr.poll(n_ticks, 20)
     print(frm)
-    for i in range(10):
+    for i in range(1):
       time.sleep(1)
       print('.',end='')
     print
-    #prdcr.send(cstr(nme), frm, tpcs[0])
+    #prdcr.send(cstr(nme), frm, tpc_2)
     prdcr.send(cstr('avros.pricing.ig.Tick'), frm.drop(columns=['offst']), tpc_2)
   except RuntimeError: 
     type, value, traceback = sys.exc_info()
